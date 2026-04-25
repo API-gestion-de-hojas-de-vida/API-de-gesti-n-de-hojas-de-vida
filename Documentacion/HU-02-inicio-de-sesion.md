@@ -1,9 +1,10 @@
-# HU-02: Autenticación de Usuario
+# [HU-02] Inicio de Sesión
 
-**Como** usuario registrado en el sistema
-**Quiero** iniciar sesión utilizando mi correo electrónico y contraseña, y que el sistema valide mis credenciales antes de permitirme el acceso
-**Para** acceder de forma segura a mi cuenta y gestionar mis hojas de vida sin que terceros puedan ver o modificar mi información
+## 📖 Historia de Usuario
 
+Como usuario registrado
+Quiero iniciar sesión de forma segura
+Para que el sistema genere una sesión válida que me permita navegar por rutas protegidas
 
 ## 🔁 Flujo Esperado
 
