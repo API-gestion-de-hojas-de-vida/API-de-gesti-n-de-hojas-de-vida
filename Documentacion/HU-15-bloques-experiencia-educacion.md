@@ -30,7 +30,7 @@ Para reflejar toda mi trayectoria profesional y académica
 
 * Se responde con la siguiente estructura en JSON:
 
-json
+```json
 {
   "mensaje": "Bloque agregado exitosamente",
   "data": {
