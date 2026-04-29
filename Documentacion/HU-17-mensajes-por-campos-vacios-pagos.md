@@ -8,17 +8,21 @@ Para corregir rápidamente mi hoja de vida sin adivinar qué está mal
 
 ## 🔁 Flujo Esperado
 
-- El usuario intenta guardar o finalizar su hoja de vida con campos incompletos.
-- El sistema identifica todos los campos vacíos o inválidos.
-- El sistema retorna un listado claro de los campos que faltan.
-- El usuario visualiza los mensajes de error en la interfaz.
+🔁 Flujo Esperado
 
-## ✅ Criterios de Aceptación
+* El usuario intenta guardar o finalizar con datos incompletos.
+* El sistema valida todos los campos requeridos.
+* El sistema identifica campos vacíos o inválidos.
+* El sistema construye una lista completa de errores.
+* El sistema retorna todos los errores en una sola respuesta.
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] El sistema identifica y lista todos los campos faltantes en una sola respuesta.
-- [ ] Los mensajes de error son claros y específicos por campo.
-- [ ] Se retorna HTTP 400 con el detalle completo de errores.
+✅ Criterios de Aceptación
+
+1. 🔍 Estructura y lógica del servicio
+
+* Se listan todos los errores en una sola ejecución.
+* Cada error corresponde a un campo específico.
+* Se diferencian errores de vacío y formato.
 
 2. 📆 **Estructura de la información**
 * Respuesta:
