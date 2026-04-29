@@ -6,19 +6,21 @@ Como usuario Gratis
 Quiero ver un botón de "Actualizar a Plus" que me redirija al flujo de pago
 Para iniciar el proceso de suscripción mensual
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario Gratis hace clic en "Actualizar a Plus".
-- El sistema verifica que el usuario tiene plan Gratis.
-- El sistema retorna la información del plan Plus con el precio y beneficios.
-- El usuario es redirigido al flujo de pago.
+* El usuario solicita ver el plan Plus.
+* El sistema valida autenticación.
+* El sistema verifica el plan actual.
+* Si es Gratis, retorna información.
+* Si no, bloquea acceso.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint GET para obtener la información del plan Plus.
-- [ ] Se valida que el usuario tenga plan Gratis antes de mostrar la opción.
-- [ ] Se retorna el precio y beneficios del plan Plus.
+1. 🔍 Estructura y lógica del servicio
+
+* Se valida que el usuario esté autenticado.
+* Se valida que el usuario tenga plan Gratis.
+* No se muestra opción si ya tiene plan superior.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
