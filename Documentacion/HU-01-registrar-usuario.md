@@ -1,13 +1,17 @@
-# HU-01: Registro de Nuevo Usuario
+# [HU-01] Registro de Usuario
 
-**Como** nuevo visitante de la plataforma
-**Quiero** registrarme en el sistema proporcionando mis datos básicos como nombre completo, correo electrónico y contraseña, y recibir una confirmación de registro exitoso
-**Para** crear mi cuenta en el sistema de gestión de hojas de vida y poder acceder a todas las funcionalidades disponibles según mi plan
+## 📖 Historia de Usuario
+
+Como usuario nuevo
+Quiero registrarme fácil y rapido en la plataforma ingresando mis datos básicos y contraseña
+Para que el sistema me asigne automáticamente el rol "Gratis" y cree mi perfil
 
 ## 🔁 Flujo Esperado
 
 - El usuario ingresa nombre completo, correo electrónico y contraseña.
-- El sistema valida que el correo no esté registrado previamente.
+- El frontend realiza una validación previa de formato y deshabilita el botón de envío para evitar peticiones duplicadas.
+- El backend recibe el payload, elimina espacios en blanco al inicio y final (trim) y convierte el correo a minúsculas.
+- El sistema consulta la base de datos para garantizar la unicidad del correo.
 - El sistema valida que la contraseña tenga mínimo 8 caracteres, una mayúscula y un número.
 - El sistema crea el perfil con rol "Gratis" automáticamente.
 - El sistema retorna confirmación de registro exitoso.
@@ -15,6 +19,8 @@
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
+- [ ] El campo email debe ser validado con formato estándar y guardado estrictamente en minúsculas.
+- [ ] El sistema debe limpiar (trim) los espacios en el nombre y email.
 - [ ] Se expone un endpoint POST para el registro.
 - [ ] Se valida que el correo sea único en el sistema.
 - [ ] Se valida formato y seguridad de la contraseña.
