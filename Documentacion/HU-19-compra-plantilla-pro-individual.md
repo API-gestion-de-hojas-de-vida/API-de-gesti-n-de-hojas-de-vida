@@ -6,23 +6,27 @@ Como usuario
 Quiero comprar una plantilla Pro individual
 Para obtener acceso permanente a ese diseño específico
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario selecciona una plantilla Pro que desea comprar.
-- El sistema verifica que el usuario no tenga ya acceso a esa plantilla.
-- El usuario completa el proceso de pago.
-- El sistema registra la transacción y otorga acceso permanente a la plantilla.
+* El usuario selecciona plantilla.
+* El sistema valida acceso previo.
+* El usuario paga.
+* El sistema valida pago exitoso.
+* Se registra la transacción.
+* Se otorga acceso permanente.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint POST para comprar una plantilla Pro.
-- [ ] Se valida que el usuario no tenga ya acceso a la plantilla.
-- [ ] Se registra la transacción en la base de datos.
-- [ ] Se otorga acceso permanente tras el pago exitoso.
+1. 🔍 Estructura y lógica del servicio
+
+* Se valida que el usuario no tenga acceso previo.
+* La transacción solo se registra si el pago es exitoso.
+* No se duplican compras.
+
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
+```
 {
   "mensaje": "Plantilla adquirida exitosamente",
   "data": {
@@ -39,7 +43,7 @@ Para obtener acceso permanente a ese diseño específico
   "data": null,
   "success": false
 }
-
+```
 ## 🔧 Notas Técnicas
 
 ### 🚀 Endpoint – Comprar Plantilla Pro
