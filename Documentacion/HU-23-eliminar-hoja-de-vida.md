@@ -8,19 +8,32 @@ Para ejecutar el borrado en cascada de todos sus datos relacionados en la base d
 
 ## 🔁 Flujo Esperado
 
-- El usuario selecciona una hoja de vida para eliminar.
-- El sistema solicita confirmación antes de proceder.
-- El sistema valida que la hoja de vida pertenezca al usuario.
-- El sistema elimina la hoja de vida y todos sus datos relacionados.
-- El sistema retorna confirmación de eliminación exitosa.
+- El usuario autenticado accede al listado de sus hojas de vida y selecciona la opción eliminar.
+- El sistema verifica que la hoja de vida pertenezca al usuario autenticado.
+- El sistema verifica si existen enlaces de compartición activos asociados a la hoja de vida y advierte al usuario que estos también serán invalidados.
+- El sistema verifica si la hoja de vida es la única que tiene el usuario y advierte al usuario antes de proceder.
+- El sistema solicita confirmación explícita al usuario mediante un segundo paso antes de ejecutar la eliminación.
+- El sistema invalida automáticamente todos los enlaces de compartición activos asociados a la hoja de vida.
+- El sistema elimina en cascada todos los registros relacionados incluyendo bloques de experiencia, bloques de educación, habilidades, documentos PDF generados almacenados en servicios externos y enlaces de compartición.
+- Si el PDF fue generado y almacenado en un servicio externo de almacenamiento, el sistema solicita su eliminación a ese servicio.
+- El sistema registra la eliminación en un log de auditoría con fecha, hora, ID de usuario e ID de hoja de vida eliminada.
+- El sistema retorna confirmación inmediata al usuario aunque la eliminación en cascada continúe procesándose en segundo plano.
 
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint DELETE para eliminar la hoja de vida.
-- [ ] Se valida que la hoja de vida pertenezca al usuario autenticado.
-- [ ] Se elimina en cascada toda la información relacionada.
 
+- [ ] Se expone un endpoint DELETE para eliminar la hoja de vida.
+- [ ] Se valida que la hoja de vida pertenezca al usuario autenticado antes de eliminar.
+- [ ] Se requiere confirmación explícita del usuario antes de ejecutar la eliminación.
+- [ ] Se invalidan automáticamente todos los enlaces de compartición activos antes de eliminar.
+- [ ] Se elimina en cascada todos los registros relacionados: experiencia, educación, habilidades, documentos y enlaces.
+- [ ] Si el PDF está almacenado en servicio externo, se solicita su eliminación a ese servicio.
+- [ ] Se advierte al usuario si la hoja a eliminar es la única que tiene.
+- [ ] Se advierte al usuario si existen enlaces de compartición activos que serán invalidados.
+- [ ] Se registra la eliminación en log de auditoría con fecha, hora e ID de usuario.
+- [ ] La eliminación es física y definitiva, no existe posibilidad de recuperación posterior.
+- [ ] El sistema retorna confirmación inmediata sin tiempos de espera prolongados aunque el proceso en cascada continúe en segundo plano.
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
 {
