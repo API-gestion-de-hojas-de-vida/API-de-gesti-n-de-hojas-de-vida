@@ -9,9 +9,9 @@ Para que el sistema destruya mis credenciales temporales y nadie más pueda acce
 ## 🔁 Flujo Esperado
 
 - El usuario hace clic en "Cerrar sesión".
-- El sistema invalida el token o sesión activa.
-- El sistema elimina las credenciales temporales del dispositivo.
-- El sistema retorna confirmación de cierre de sesión exitoso.
+- El frontend elimina el token de su almacenamiento local (Local Storage o Cookies).
+- Se envía una petición al backend con el token actual.
+- El backend registra el token en una "lista negra" o invalida la sesión activa en la base de datos.
 - El usuario es redirigido a la página de inicio.
 
 ## ✅ Criterios de Aceptación
@@ -20,6 +20,7 @@ Para que el sistema destruya mis credenciales temporales y nadie más pueda acce
 - [ ] Se expone un endpoint POST para el cierre de sesión.
 - [ ] Se invalida el token o sesión activa del usuario.
 - [ ] Se eliminan las credenciales temporales del dispositivo.
+- [ ] Un token invalidado no debe permitir acceso a ninguna ruta protegida, incluso si no ha expirado por tiempo.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
@@ -79,3 +80,5 @@ Para que el sistema destruya mis credenciales temporales y nadie más pueda acce
 ### 🔐 Manejo de Errores
 - [ ] Se devuelve HTTP 401 si el token es inválido o expirado.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
+
+
