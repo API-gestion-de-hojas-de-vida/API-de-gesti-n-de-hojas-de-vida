@@ -6,19 +6,25 @@ Como usuario
 Quiero que al intentar finalizar el documento la API valide que no haya campos obligatorios vacíos
 Para asegurarme de que mi hoja de vida esté completa antes de exportarla o compartirla
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario hace clic en "Finalizar hoja de vida".
-- El sistema valida que todos los campos obligatorios estén completos.
-- Si hay campos vacíos, el sistema retorna un error indicando cuáles son.
-- Si todos están completos, el sistema marca la hoja de vida como finalizada.
+* El usuario hace clic en “Finalizar hoja de vida”.
+* El sistema identifica la plantilla asociada.
+* El sistema obtiene los campos obligatorios definidos por la plantilla.
+* El sistema valida todos los campos y secciones (incluyendo listas).
+* El sistema acumula los campos faltantes.
+* Si hay errores, no cambia el estado.
+* Si todo está completo, marca como finalizada.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint POST para finalizar la hoja de vida.
-- [ ] Se validan todos los campos obligatorios definidos en la plantilla.
-- [ ] Si hay campos vacíos, se retorna HTTP 400 con detalle de los campos faltantes.
+1. 🔍 Estructura y lógica del servicio
+
+* Se expone un endpoint POST para finalizar la hoja de vida.
+* Se validan todos los campos obligatorios definidos en la plantilla.
+* La validación incluye estructuras complejas (listas).
+* No se cambia el estado si hay errores.
+* La operación es completa (no parcial).
 
 ### 2. 📆 Estructura de la información
 - [ ] Si hay campos vacíos, el sistema retorna:
