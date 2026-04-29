@@ -1,23 +1,25 @@
+
 # [HU-08] Reporte de Uso de Plantillas
 
 ## 📖 Historia de Usuario
 
 Como administrador
-Quiero visualizar un reporte de cuántas veces se ha usado cada plantilla
+Quiero visualizar un reporte de cuántas veces se ha usado cada plantilla por parte de los visitantes registrados o no registrados
 Para identificar cuáles son los diseños más exitosos
 
 ## 🔁 Flujo Esperado
 
 - El administrador solicita el reporte de uso de plantillas.
-- El sistema consulta la base de datos y cuenta el uso de cada plantilla.
-- El sistema retorna el listado ordenado de mayor a menor uso.
+- El backend realiza una consulta agregada (GROUP BY, COUNT) cruzando la tabla de plantillas con la tabla de hojas de vida.
+- El resultado se ordena de manera descendente (ORDER BY count DESC).
+- Se empaqueta la lista y se envía al frontend.
 
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
 - [ ] Se expone un endpoint GET para obtener el reporte.
 - [ ] El reporte incluye todas las plantillas activas e inactivas.
-- [ ] El resultado viene ordenado de mayor a menor uso.
+- [ ] Si una plantilla tiene 0 usos, debe aparecer en la lista con valor 0, no omitirse.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
@@ -79,4 +81,3 @@ Para identificar cuáles son los diseños más exitosos
 ### 🔐 Manejo de Errores
 - [ ] Se devuelve HTTP 500 si hay error en la base de datos.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
-
