@@ -20,18 +20,27 @@ Para corregir rápidamente mi hoja de vida sin adivinar qué está mal
 - [ ] Los mensajes de error son claros y específicos por campo.
 - [ ] Se retorna HTTP 400 con el detalle completo de errores.
 
-### 2. 📆 Estructura de la información
-- [ ] Se responde con la siguiente estructura en JSON:
+2. 📆 **Estructura de la información**
+* Respuesta:
+
+```json
 {
   "mensaje": "Existen errores en el formulario",
   "data": {
     "errores": [
-      { "campo": "nombre", "mensaje": "El nombre es obligatorio" },
-      { "campo": "experiencia", "mensaje": "Debe agregar al menos una experiencia laboral" }
+      {
+        "campo": "nombre",
+        "mensaje": "El nombre es obligatorio"
+      },
+      {
+        "campo": "experiencia",
+        "mensaje": "Debe agregar al menos una experiencia laboral"
+      }
     ]
   },
   "success": false
 }
+```
 
 ## 🔧 Notas Técnicas
 
