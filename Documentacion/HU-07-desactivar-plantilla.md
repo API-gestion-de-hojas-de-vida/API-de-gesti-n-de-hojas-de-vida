@@ -8,11 +8,10 @@ Para que no aparezca en el catálogo público pero mantenga la integridad de las
 
 ## 🔁 Flujo Esperado
 
-- El administrador selecciona una plantilla activa.
-- El administrador solicita su desactivación.
-- El sistema realiza un borrado lógico cambiando el estado a inactivo.
-- El sistema retorna confirmación de desactivación exitosa.
-- La plantilla deja de aparecer en el catálogo público.
+- El administrador solicita la desactivación mediante el ID.
+- El backend valida la existencia de la plantilla.
+- Se actualiza la bandera booleana o estado a "inactivo" (Soft Delete). No se ejecuta un DELETE físico.
+- El sistema retorna la confirmación. A partir de este momento, los endpoints de catálogo público omiten este ID.
 
 ## ✅ Criterios de Aceptación
 
@@ -20,6 +19,7 @@ Para que no aparezca en el catálogo público pero mantenga la integridad de las
 - [ ] Se expone un endpoint PATCH para desactivar plantillas.
 - [ ] Se valida que la plantilla exista y esté activa.
 - [ ] Se realiza borrado lógico, no físico.
+- [ ] Si la plantilla ya estaba inactiva, la API no falla de forma crítica, pero advierte del estado (409 Conflict).
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
