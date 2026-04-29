@@ -1,45 +1,40 @@
 # HU-15 Agregar Bloques Dinámicos de Experiencia y Educación
 
-## 📖 Historia de Usuario
+📖 Historia de Usuario
 
 Como usuario
 Quiero agregar dinámicamente múltiples bloques de Experiencia Laboral y Educación
 Para reflejar toda mi trayectoria profesional y académica
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario hace clic en "Agregar experiencia" o "Agregar educación".
-- El sistema agrega un nuevo bloque vacío al formulario.
-- El usuario llena el bloque con su información.
-- El sistema guarda todos los bloques como registros relacionados.
+* El usuario hace clic en “Agregar experiencia” o “Agregar educación”.
+* El sistema valida el tipo de bloque solicitado.
+* El sistema agrega un nuevo bloque vacío al formulario.
+* El usuario llena el bloque con su información.
+* El sistema valida los campos obligatorios del bloque.
+* El sistema guarda el bloque como un registro independiente asociado a la hoja de vida.
+* El usuario puede repetir el proceso múltiples veces sin afectar los bloques existentes.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint POST para agregar bloques de experiencia y educación.
-- [ ] Se permite agregar múltiples bloques por hoja de vida.
-- [ ] Cada bloque se guarda como un registro independiente relacionado.
+1. 🔍 Estructura y lógica del servicio
 
-### 2. 📆 Estructura de la información
-- [ ] Se responde con la siguiente estructura en JSON:
-{
-  "mensaje": "Bloque agregado exitosamente",
-  "data": {
-    "id": 1,
-    "tipo": "experiencia",
-    "empresa": "Tech Corp",
-    "cargo": "Desarrollador Backend",
-    "fechaInicio": "2022-01-01",
-    "fechaFin": "2024-01-01"
-  },
-  "success": true
-}
-- [ ] Si faltan campos obligatorios, el sistema retorna:
-{
-  "mensaje": "Los campos empresa y cargo son obligatorios",
-  "data": null,
-  "success": false
-}
+* Se expone un endpoint POST para agregar bloques de experiencia y educación.
+* Se permite agregar múltiples bloques por hoja de vida.
+* Cada bloque se guarda como un registro independiente relacionado.
+* Se valida el tipo de bloque (experiencia o educación).
+* Se validan los campos obligatorios antes de guardar.
+
+1. 📆 Estructura de la información
+
+* Se responde con la siguiente estructura en JSON:
+    { “mensaje”: “Bloque agregado exitosamente”, “data”: { “id”: 1, “tipo”: “experiencia”, “empresa”: “Tech Corp”, “cargo”: “Desarrollador Backend”, “fechaInicio”: “2022-01-01”, “fechaFin”: “2024-01-01” }, “success”: true }
+* Cada respuesta incluye el ID del bloque creado.
+* Los campos de fecha cumplen con un formato válido.
+* El campo tipo siempre está presente en la respuesta.
+
+
 
 ## 🔧 Notas Técnicas
 
