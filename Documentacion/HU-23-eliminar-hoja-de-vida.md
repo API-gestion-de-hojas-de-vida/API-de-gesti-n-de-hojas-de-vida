@@ -45,8 +45,9 @@ Para ejecutar el borrado en cascada de todos sus datos relacionados en la base d
 ```
 
 - [ ] Si la hoja no pertenece al usuario, el sistema retorna:
-{
+
 ```
+{
   "mensaje": "No tienes permiso para eliminar esta hoja de vida",
   "data": null,
   "success": false
