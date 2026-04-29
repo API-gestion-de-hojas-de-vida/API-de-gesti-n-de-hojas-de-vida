@@ -6,35 +6,34 @@ Como usuario
 Quiero poder buscar plantillas por palabras clave
 Para encontrar rápidamente un estilo acorde a mi profesión
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario ingresa una palabra clave en el buscador.
-- El sistema consulta la base de datos filtrando por nombre o descripción.
-- El sistema retorna las plantillas que coincidan con la búsqueda.
+* El usuario ingresa una palabra clave en el buscador.
+* El sistema valida que la palabra clave no esté vacía ni compuesta únicamente por espacios.
+* El sistema normaliza el término de búsqueda (eliminando espacios innecesarios y aplicando formato consistente).
+* El sistema consulta la base de datos filtrando por coincidencia parcial en nombre o descripción.
+* El sistema aplica un límite de resultados para optimizar la respuesta.
+* El sistema retorna las plantillas activas que coincidan con la búsqueda.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint GET con parámetro de búsqueda.
-- [ ] La búsqueda aplica sobre el nombre y descripción de la plantilla.
-- [ ] Solo se retornan plantillas activas.
+1. 🔍 Estructura y lógica del servicio
 
-### 2. 📆 Estructura de la información
-- [ ] Se responde con la siguiente estructura en JSON:
-{
-  "mensaje": "Búsqueda realizada exitosamente",
-  "data": [
-    { "id": 1, "nombre": "Plantilla Moderna", "categoria": "Gratis" },
-    { "id": 4, "nombre": "Plantilla Moderna Pro", "categoria": "Pro" }
-  ],
-  "success": true
-}
-- [ ] Si no hay resultados, el sistema retorna:
-{
-  "mensaje": "No se encontraron plantillas con ese término",
-  "data": [],
-  "success": true
-}
+* Se expone un endpoint GET con parámetro de búsqueda.
+* La búsqueda aplica sobre el nombre y descripción de la plantilla.
+* La búsqueda es insensible a mayúsculas y minúsculas.
+* Se permiten coincidencias parciales del término ingresado.
+* Solo se retornan plantillas activas.
+* Se valida que el parámetro de búsqueda no esté vacío antes de ejecutar la consulta.
+
+1. 📆 Estructura de la información
+
+* Se responde con la siguiente estructura en JSON:
+    { “mensaje”: “Búsqueda realizada exitosamente”, “data”: [ { “id”: 1, “nombre”: “Plantilla Moderna”, “categoria”: “Gratis” }, { “id”: 4, “nombre”: “Plantilla Moderna Pro”, “categoria”: “Pro” } ], “success”: true }
+* El campo data siempre retorna una lista (vacía o con resultados).
+* Los resultados pueden venir ordenados por nombre o relevancia.
+* Si no hay resultados, el sistema retorna:
+    { “mensaje”: “No se encontraron plantillas con ese término”, “data”: [], “success”: true }
 
 ## 🔧 Notas Técnicas
 
