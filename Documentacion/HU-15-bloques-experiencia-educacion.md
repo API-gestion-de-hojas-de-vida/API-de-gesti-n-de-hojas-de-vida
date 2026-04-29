@@ -47,7 +47,7 @@ Para reflejar toda mi trayectoria profesional y académica
 * Los campos de fecha cumplen con un formato válido.
 * El campo tipo siempre está presente en la respuesta.
 
-
+```
 
 ## 🔧 Notas Técnicas
 
