@@ -1,91 +1,71 @@
-# [HU-04] Crear Estructura Base de Plantilla
+# [HU-03] Cierre de Sesión
 
 ## 📖 Historia de Usuario
 
-Como administrador
-Quiero crear la estructura base de una nueva plantilla definiendo sus secciones
-Para que el frontend sepa qué campos debe renderizar dinámicamente
+Como usuario autenticado
+Quiero poder cerrar mi sesión
+Para que el sistema destruya mis credenciales temporales y nadie más pueda acceder a mi perfil desde ese dispositivo
 
 ## 🔁 Flujo Esperado
 
-- El administrador ingresa el nombre de la plantilla, el array de secciones que la componen y su categoría por defecto.
-- El backend verifica mediante el token que el usuario tiene permisos de "Administrador".
-- El sistema valida que no exista otra plantilla activa con el mismo nombre exacto (ignorando espacios extra).
-- El sistema guarda la entidad en la base de datos y la retorna con su nuevo ID.
+- El usuario hace clic en "Cerrar sesión".
+- El frontend elimina el token de su almacenamiento local (Local Storage o Cookies).
+- Se envía una petición al backend con el token actual.
+- El backend registra el token en una "lista negra" o invalida la sesión activa en la base de datos.
+- El usuario es redirigido a la página de inicio.
 
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se debe validar autorización: Solo el rol Administrador puede consumir este endpoint.
-- [ ] El array de secciones debe contener al menos un elemento y no permitir strings vacíos.
-- [ ] Se debe aplicar trim al nombre para evitar duplicados accidentales.
+- [ ] Se expone un endpoint POST para el cierre de sesión.
+- [ ] Se invalida el token o sesión activa del usuario.
+- [ ] Se eliminan las credenciales temporales del dispositivo.
+- [ ] Un token invalidado no debe permitir acceso a ninguna ruta protegida, incluso si no ha expirado por tiempo.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
 
 ```json
 {
-  "mensaje": "Plantilla creada exitosamente",
-  "data": {
-    "id": 1,
-    "nombre": "Plantilla Moderna",
-    "secciones": ["Perfil", "Experiencia", "Educación", "Habilidades"],
-    "categoria": "Gratis"
-  },
-  "success": true
-}
-```
-
-- [ ] Si el nombre ya existe, el sistema retorna:
-
-```json
-{
-  "mensaje": "Ya existe una plantilla con ese nombre",
+  "mensaje": "Sesión cerrada exitosamente",
   "data": null,
-  "success": false
+  "success": true
 }
 ```
 
 ## 🔧 Notas Técnicas
 
-### 🚀 Endpoint – Crear Plantilla
+### 🚀 Endpoint – Cierre de Sesión
 - **Método HTTP:** `POST`
-- **Ruta:** `/api/v1/plantillas`
+- **Ruta:** `/api/v1/usuarios/logout`
 
 ## 🧪 Requisitos de Pruebas
 
-### ✅ Caso 1: Creación exitosa
-- **Precondición:** El nombre de la plantilla no existe en la base de datos.
-- **Acción:** Ejecutar POST /api/v1/plantillas con datos válidos.
+### ✅ Caso 1: Cierre de sesión exitoso
+- **Precondición:** El usuario tiene una sesión activa.
+- **Acción:** Ejecutar POST /api/v1/usuarios/logout con token válido.
 - **Resultado esperado:**
-  - Código HTTP 201 Created
-  - Campo id generado correctamente
+  - Código HTTP 200 OK
+  - Campo mensaje = "Sesión cerrada exitosamente"
   - Campo success = true
 
-### ✅ Caso 2: Nombre duplicado
-- **Precondición:** Ya existe una plantilla con el mismo nombre.
-- **Acción:** Ejecutar POST con nombre duplicado.
+### ❌ Caso 2: Token inválido o expirado
+- **Precondición:** El usuario envía un token inválido o ya expirado.
+- **Acción:** Ejecutar POST con token inválido.
 - **Resultado esperado:**
-  - Código HTTP 409 Conflict
-  - Campo mensaje = "Ya existe una plantilla con ese nombre"
+  - Código HTTP 401 Unauthorized
+  - Campo mensaje = "Sesión no válida o ya expirada"
   - Campo success = false
-
-### ❌ Caso 3: Secciones vacías
-- **Precondición:** El administrador no define ninguna sección.
-- **Acción:** Ejecutar POST con secciones vacías.
-- **Resultado esperado:**
-  - Código HTTP 400 Bad Request
-  - Campo mensaje = "Las secciones no pueden estar vacías"
 
 ## ✅ Definición de Hecho
 
 ### 📦 Alcance Funcional
-- [ ] El endpoint crea correctamente la estructura de la plantilla.
-- [ ] Se valida unicidad del nombre.
-- [ ] Las secciones quedan guardadas correctamente.
+- [ ] El endpoint invalida correctamente el token o sesión activa.
+- [ ] Las credenciales temporales son eliminadas del dispositivo.
+- [ ] El acceso queda bloqueado tras cerrar sesión.
 
 ### 🧪 Pruebas Completadas
-- [ ] Se ejecutaron pruebas unitarias de validación.
+- [ ] Se ejecutaron pruebas unitarias de invalidación de token.
 - [ ] Se cubrieron los casos de error.
 - [ ] Las pruebas funcionales están documentadas y pasadas.
 
@@ -98,7 +78,6 @@ Para que el frontend sepa qué campos debe renderizar dinámicamente
   - Ejemplo de error
 
 ### 🔐 Manejo de Errores
-- [ ] Se devuelve HTTP 409 si el nombre ya existe.
-- [ ] Se devuelve HTTP 400 si las secciones están vacías.
+- [ ] Se devuelve HTTP 401 si el token es inválido o expirado.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
 
