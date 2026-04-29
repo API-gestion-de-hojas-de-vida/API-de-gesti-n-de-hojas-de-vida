@@ -26,10 +26,12 @@ Para reflejar toda mi trayectoria profesional y académica
 * Se valida el tipo de bloque (experiencia o educación).
 * Se validan los campos obligatorios antes de guardar.
 
-1. 📆 Estructura de la información
+1. 📅 **Estructura de la información**
 
 * Se responde con la siguiente estructura en JSON:
-    {
+
+json
+{
   "mensaje": "Bloque agregado exitosamente",
   "data": {
     "id": 1,
