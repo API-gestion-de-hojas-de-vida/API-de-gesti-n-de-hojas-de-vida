@@ -1,3 +1,6 @@
+# [HU-06] Categorizar Plantilla por Plan
+
+
 ## 📖 Historia de Usuario
 
 Como administrador
