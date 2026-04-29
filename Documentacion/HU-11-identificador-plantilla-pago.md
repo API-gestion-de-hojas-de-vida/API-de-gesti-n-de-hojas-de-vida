@@ -1,4 +1,3 @@
-
 # [HU-11] Indicador Visual de Plantilla de Pago
 
 ## 📖 Historia de Usuario
@@ -9,14 +8,15 @@ Para identificar inmediatamente si una plantilla es de pago o gratuita
 
 ## 🔁 Flujo Esperado
 
-- El usuario accede al catálogo de plantillas.
+- Durante la consulta del catálogo (GET /plantillas), el backend formatea la respuesta.
+- Se evalúa la columna categoria. Si es "Plus" o "Pro", se inyecta dinámicamente un atributo booleano esDePago: true, sino esDePago: false.
 - El sistema retorna cada plantilla con su categoría incluida.
 - El frontend muestra un indicador visual según la categoría.
 
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
-- [ ] Cada plantilla en la respuesta incluye el campo categoria.
+- [ ] El campo esDePago debe ser un tipo Booleano estricto (true/false), no un string ("true").
 - [ ] El campo categoria puede ser Gratis, Plus o Pro.
 - [ ] Solo se retornan plantillas activas.
 
@@ -74,3 +74,5 @@ Para identificar inmediatamente si una plantilla es de pago o gratuita
 ### 🔐 Manejo de Errores
 - [ ] Se devuelve HTTP 500 si hay error en la base de datos.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
+
+---
