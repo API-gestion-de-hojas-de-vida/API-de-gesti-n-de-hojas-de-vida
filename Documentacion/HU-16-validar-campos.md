@@ -35,12 +35,13 @@ Para asegurarme de que mi hoja de vida esté completa antes de exportarla o comp
 }
 ```
 - [ ] Si todo está completo, el sistema retorna:
-      ```
+```
 {
   "mensaje": "Hoja de vida finalizada exitosamente",
   "data": { "id": 1, "estado": "finalizada" },
   "success": true
-}```
+}
+```
 
 ## 🔧 Notas Técnicas
 
