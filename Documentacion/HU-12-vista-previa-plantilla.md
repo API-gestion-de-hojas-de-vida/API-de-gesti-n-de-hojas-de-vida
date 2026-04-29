@@ -10,7 +10,8 @@ Para evaluar el diseño antes de usarlo
 
 - El usuario hace clic en una plantilla del catálogo.
 - El sistema consulta la plantilla por su ID.
-- El sistema retorna la estructura completa con datos de ejemplo.
+- El backend busca el registro. Si está inactivo o no existe, bloquea la acción.
+- El backend empaqueta la estructura de la plantilla junto con un objeto JSON embebido de datosEjemplo preconfigurado.
 - El usuario visualiza el mockup de la plantilla.
 
 ## ✅ Criterios de Aceptación
@@ -98,3 +99,5 @@ Para evaluar el diseño antes de usarlo
 ### 🔐 Manejo de Errores
 - [ ] Se devuelve HTTP 404 si la plantilla no existe o está inactiva.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
+
+---
