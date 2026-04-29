@@ -36,6 +36,7 @@ Para ejecutar el borrado en cascada de todos sus datos relacionados en la base d
 - [ ] El sistema retorna confirmación inmediata sin tiempos de espera prolongados aunque el proceso en cascada continúe en segundo plano.
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
+```
 {
   "mensaje": "Hoja de vida eliminada exitosamente",
   "data": null,
@@ -47,6 +48,7 @@ Para ejecutar el borrado en cascada de todos sus datos relacionados en la base d
   "data": null,
   "success": false
 }
+```
 
 ## 🔧 Notas Técnicas
 
