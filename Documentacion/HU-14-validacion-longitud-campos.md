@@ -29,13 +29,23 @@ Para evitar errores al guardar en la base de datos
 
 * Si un campo supera el límite, el sistema retorna:
   ```json
-    { “mensaje”: “El campo ‘descripción’ supera la longitud máxima permitida de 500 caracteres”, “data”: null, “success”: false }
-  ```
+    {
+  "mensaje": "El campo 'descripción' supera la longitud máxima permitida de 500 caracteres",
+  "data": null,
+  "success": false
+}
+  
 * El mensaje incluye el nombre del campo y su límite máximo permitido.
 * Se pueden listar múltiples campos inválidos en una sola respuesta.
 * Si todos los campos son válidos, el sistema retorna:
 ```json
-    { “mensaje”: “Información guardada exitosamente”, “data”: { “id”: 1 }, “success”: true }
+{
+  "mensaje": "Información guardada exitosamente",
+  "data": {
+    "id": 1
+  },
+  "success": true
+}
 ```
 
 ## 🔧 Notas Técnicas
