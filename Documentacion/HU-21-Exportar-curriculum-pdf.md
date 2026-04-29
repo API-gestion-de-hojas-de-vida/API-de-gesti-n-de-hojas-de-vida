@@ -6,34 +6,49 @@ Como usuario
 Quiero presionar el botón "Exportar"
 Para que el backend genere un archivo PDF descargable con mis datos y plantilla seleccionada
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario hace clic en "Exportar".
-- El sistema verifica que la hoja de vida esté finalizada y tenga plantilla asignada.
-- El sistema genera el archivo PDF con los datos del usuario.
-- El sistema retorna el archivo PDF para descarga.
+* El usuario accede a su hoja de vida.
+* El usuario selecciona el formato de descarga (PDF o Word).
+* El frontend envía la solicitud al backend indicando el formato.
+* El backend valida que la hoja de vida exista y pertenezca al usuario.
+* El sistema valida que el formato solicitado sea permitido.
+* El backend obtiene los datos y estructura de la plantilla.
+* El sistema transforma la información al formato solicitado.
+* El sistema genera el archivo correspondiente en memoria.
+* El backend retorna el archivo listo para descarga.
+* El frontend inicia la descarga automática.
+* Si el formato no es válido, el sistema rechaza la solicitud.
+* Si ocurre un error, se evita la descarga de archivos corruptos.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint GET para exportar la hoja de vida en PDF.
-- [ ] Se valida que la hoja de vida esté finalizada.
-- [ ] Se valida que tenga una plantilla asignada.
-- [ ] El archivo PDF se genera y se retorna para descarga.
+1. 🔍 Estructura y lógica del servicio
+
+* Se expone un endpoint GET o POST para descarga.
+* Se valida que el formato sea PDF o Word.
+* Se valida que la hoja de vida exista y pertenezca al usuario.
+* El sistema genera correctamente el archivo en el formato solicitado.
+* Se garantiza consistencia entre formatos (misma información).
 
 ### 2. 📆 Estructura de la información
-- [ ] Si la hoja de vida no está finalizada, el sistema retorna:
-{
-  "mensaje": "La hoja de vida debe estar finalizada para exportarse",
-  "data": null,
-  "success": false
+
+* Para PDF:
+    * Content-Type: application/pdf
+* Para Word:
+    * Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+* El nombre del archivo es consistente (ej: hoja_de_vida.pdf / .docx)
+* En caso de error:
 }
 - [ ] Si no tiene plantilla asignada, el sistema retorna:
+```
 {
   "mensaje": "Debe asignar una plantilla antes de exportar",
   "data": null,
   "success": false
 }
+```
+
 
 ## 🔧 Notas Técnicas
 
