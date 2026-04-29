@@ -22,23 +22,31 @@ Para iniciar el proceso de suscripción mensual
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
+```
 {
   "mensaje": "Información del plan Plus obtenida exitosamente",
   "data": {
     "plan": "Plus",
     "precio": 9.99,
     "moneda": "USD",
-    "beneficios": ["Plantillas Plus", "Exportación ilimitada", "Soporte prioritario"],
+    "beneficios": [
+      "Plantillas Plus",
+      "Exportación ilimitada",
+      "Soporte prioritario"
+    ],
     "urlPago": "/api/v1/pagos/suscripcion/plus"
   },
   "success": true
 }
+```
 - [ ] Si el usuario ya tiene plan Plus o Pro, el sistema retorna:
+```
 {
   "mensaje": "Ya cuentas con un plan superior o igual a Plus",
   "data": null,
   "success": false
 }
+```
 
 ## 🔧 Notas Técnicas
 
