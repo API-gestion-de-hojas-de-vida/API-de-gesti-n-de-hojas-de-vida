@@ -6,31 +6,36 @@ Como usuario
 Quiero presionar el botón "Exportar"
 Para que el backend genere un archivo PDF descargable con mis datos y plantilla seleccionada
 
-🔁 Flujo Esperado
+## 🔁 Flujo Esperado
 
-* El usuario accede a su hoja de vida.
-* El usuario selecciona el formato de descarga (PDF o Word).
-* El frontend envía la solicitud al backend indicando el formato.
-* El backend valida que la hoja de vida exista y pertenezca al usuario.
-* El sistema valida que el formato solicitado sea permitido.
-* El backend obtiene los datos y estructura de la plantilla.
-* El sistema transforma la información al formato solicitado.
-* El sistema genera el archivo correspondiente en memoria.
-* El backend retorna el archivo listo para descarga.
-* El frontend inicia la descarga automática.
-* Si el formato no es válido, el sistema rechaza la solicitud.
-* Si ocurre un error, se evita la descarga de archivos corruptos.
+- El usuario autenticado accede a su hoja de vida y hace clic en "Exportar PDF".
+- El sistema verifica que el usuario esté autenticado y que la hoja de vida le pertenezca.
+- El sistema valida que la hoja de vida tenga estado "finalizada" antes de proceder.
+- El sistema valida que la hoja de vida tenga una plantilla activa asignada.
+- El sistema verifica si el usuario tiene los permisos de exportación según su plan, aplicando límites de exportaciones mensuales para usuarios Gratis.
+- El sistema inicia la generación del PDF aplicando exactamente el diseño de la plantilla seleccionada incluyendo colores, tipografías, márgenes y distribución de secciones.
+- El sistema maneja correctamente caracteres especiales, tildes, emojis y símbolos en el contenido del PDF.
+- El sistema genera metadata del PDF incluyendo autor, fecha de creación y título del documento.
+- El sistema nombra el archivo con el formato NombreUsuario-HV-YYYY-MM-DD.pdf.
+- El PDF se retorna como stream de descarga directa con Content-Type application/pdf.
+- El sistema registra la exportación en un log de auditoría con fecha, hora, ID de usuario e ID de hoja de vida.
 
-✅ Criterios de Aceptación
+## ✅ Criterios de Aceptación
 
-1. 🔍 Estructura y lógica del servicio
+### 1. 🔍 Estructura y lógica del servicio
 
-* Se expone un endpoint GET o POST para descarga.
-* Se valida que el formato sea PDF o Word.
-* Se valida que la hoja de vida exista y pertenezca al usuario.
-* El sistema genera correctamente el archivo en el formato solicitado.
-* Se garantiza consistencia entre formatos (misma información).
-
+- [ ] Se expone un endpoint GET para exportar la hoja de vida en PDF.
+- [ ] Se valida que la hoja de vida pertenezca al usuario autenticado.
+- [ ] Se valida que la hoja de vida tenga estado "finalizada".
+- [ ] Se valida que la hoja de vida tenga una plantilla activa asignada.
+- [ ] Se aplica límite de exportaciones mensuales para usuarios con plan Gratis.
+- [ ] El PDF respeta exactamente el diseño de la plantilla incluyendo colores, tipografías y distribución.
+- [ ] El PDF contiene texto seleccionable, no es una imagen escaneada.
+- [ ] El PDF incluye metadata de autor, fecha de creación y título.
+- [ ] El nombre del archivo sigue el formato NombreUsuario-HV-YYYY-MM-DD.pdf.
+- [ ] La generación del PDF no supera los 5 segundos para una experiencia fluida.
+- [ ] Se registra cada exportación en log de auditoría.
+- [ ] Si la plantilla asignada fue desactivada después de finalizar la hoja de vida, el sistema notifica al usuario y le solicita seleccionar una nueva plantilla antes de exportar.
 ### 2. 📆 Estructura de la información
 
 * Para PDF:
