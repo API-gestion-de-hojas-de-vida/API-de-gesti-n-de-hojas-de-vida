@@ -1,38 +1,39 @@
 # [HU-14] Validación de Longitud de Campos
 
-## 📖 Historia de Usuario
+📖 Historia de Usuario
 
 Como usuario
 Quiero llenar las secciones de texto de la hoja de vida y que la plataforma valide la longitud máxima de caracteres
 Para evitar errores al guardar en la base de datos
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario llena los campos de texto de su hoja de vida.
-- El sistema valida que cada campo no supere la longitud máxima permitida.
-- Si algún campo supera el límite, el sistema retorna un error descriptivo.
-- Si todos los campos son válidos, el sistema guarda la información.
+* El usuario llena los campos de texto de su hoja de vida.
+* El sistema recibe todos los datos del formulario.
+* El sistema valida que cada campo no supere la longitud máxima permitida antes de guardar.
+* El sistema evalúa todos los campos y acumula los errores encontrados.
+* Si algún campo supera el límite, el sistema retorna todos los errores sin guardar información.
+* Si todos los campos son válidos, el sistema guarda la información en una única operación.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se valida la longitud máxima de cada campo antes de guardar.
-- [ ] Se retorna un error descriptivo indicando qué campo supera el límite.
-- [ ] Los límites de caracteres están definidos por campo.
+1. 🔍 Estructura y lógica del servicio
 
-### 2. 📆 Estructura de la información
-- [ ] Si un campo supera el límite, el sistema retorna:
-{
-  "mensaje": "El campo 'descripción' supera la longitud máxima permitida de 500 caracteres",
-  "data": null,
-  "success": false
-}
-- [ ] Si todos los campos son válidos, el sistema retorna:
-{
-  "mensaje": "Información guardada exitosamente",
-  "data": { "id": 1 },
-  "success": true
-}
+* Se valida la longitud máxima de cada campo antes de guardar.
+* Se retorna un error descriptivo indicando qué campo supera el límite.
+* Se validan todos los campos en una sola ejecución.
+* No se guarda información parcial si existen errores.
+* Los límites de caracteres están definidos por campo.
+
+1. 📆 Estructura de la información
+
+* Si un campo supera el límite, el sistema retorna:
+    { “mensaje”: “El campo ‘descripción’ supera la longitud máxima permitida de 500 caracteres”, “data”: null, “success”: false }
+* El mensaje incluye el nombre del campo y su límite máximo permitido.
+* Se pueden listar múltiples campos inválidos en una sola respuesta.
+* Si todos los campos son válidos, el sistema retorna:
+    { “mensaje”: “Información guardada exitosamente”, “data”: { “id”: 1 }, “success”: true }
+
 
 ## 🔧 Notas Técnicas
 
