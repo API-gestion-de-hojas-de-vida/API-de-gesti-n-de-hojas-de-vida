@@ -36,6 +36,7 @@ Para que la API consulte mis datos y los inyecte de nuevo en el formulario
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
+```
 {
   "mensaje": "Hoja de vida cargada exitosamente",
   "data": {
@@ -52,12 +53,15 @@ Para que la API consulte mis datos y los inyecte de nuevo en el formulario
   },
   "success": true
 }
+```
 - [ ] Si la hoja de vida no pertenece al usuario, el sistema retorna:
+```
 {
   "mensaje": "No tienes permiso para editar esta hoja de vida",
   "data": null,
   "success": false
 }
+```
 
 ## 🔧 Notas Técnicas
 
