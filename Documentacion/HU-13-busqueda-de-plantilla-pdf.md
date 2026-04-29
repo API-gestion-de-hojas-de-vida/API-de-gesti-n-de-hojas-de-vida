@@ -29,20 +29,28 @@ Para encontrar rápidamente un estilo acorde a mi profesión
 1. 📆 Estructura de la información
 
 * Se responde con la siguiente estructura en JSON:
-```json
-    { “mensaje”: “Búsqueda realizada exitosamente”,
- “data”:
-[ { “id”: 1,
-“nombre”: “Plantilla Moderna”,
- “categoria”: “Gratis” },
- { “id”: 4, “nombre”:
-“Plantilla Moderna Pro”,
- “categoria”: “Pro” } ],
- “success”: true }
+ ```json
+{
+  "mensaje": "Búsqueda realizada exitosamente",
+  "data": [
+    {
+      "id": 1,
+      "nombre": "Plantilla Moderna",
+      "categoria": "Gratis"
+    },
+    {
+      "id": 4,
+      "nombre": "Plantilla Moderna Pro",
+      "categoria": "Pro"
+    }
+  ],
+  "success": true
+}
 ```
 * El campo data siempre retorna una lista (vacía o con resultados).
 * Los resultados pueden venir ordenados por nombre o relevancia.
 * Si no hay resultados, el sistema retorna:
+  ```
     { “mensaje”: “No se encontraron plantillas con ese término”, “data”: [], “success”: true }
 
 ## 🔧 Notas Técnicas
