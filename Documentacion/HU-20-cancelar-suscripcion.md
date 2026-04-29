@@ -6,20 +6,33 @@ Como usuario Plus
 Quiero poder cancelar mi suscripción desde mi perfil
 Para actualizar mi estado en la base de datos y evitar futuros cobros
 
-🔁 Flujo Esperado
+## 🔁 Flujo Esperado
 
-* El usuario solicita cancelación.
-* El sistema valida plan activo.
-* El sistema solicita confirmación.
-* El sistema programa cancelación al final del periodo.
-* Retorna confirmación.
+- El usuario autenticado accede a la sección "Mi Plan" dentro de su perfil.
+- El sistema verifica que el usuario tenga una suscripción Plus activa y vigente.
+- El sistema muestra al usuario información detallada sobre las consecuencias de la cancelación, incluyendo la fecha exacta hasta la que tendrá acceso a las funcionalidades Plus y qué ocurrirá con sus hojas de vida que usen plantillas Plus.
+- El usuario confirma explícitamente que desea cancelar mediante un segundo paso de confirmación.
+- El sistema verifica que no haya una transacción de pago en proceso antes de proceder.
+- El sistema programa la cancelación para que se ejecute al finalizar el período ya pagado, sin realizar ningún cobro adicional.
+- El sistema actualiza el estado de la suscripción a "cancelada pendiente de vencimiento".
+- El sistema envía un correo de confirmación al usuario con la fecha exacta en que su plan regresará a Gratis.
+- Al llegar la fecha de vencimiento, el sistema cambia automáticamente el estado del usuario a Gratis y restringe el acceso a funcionalidades exclusivas del plan Plus.
+- Las hojas de vida que usen plantillas Plus quedan visibles pero no editables una vez que el plan venza.
 
-✅ Criterios de Aceptación
+## ✅ Criterios de Aceptación
 
-1. 🔍 Estructura y lógica del servicio
+### 1. 🔍 Estructura y lógica del servicio
 
-* Se valida que el usuario tenga plan Plus activo.
-* No se cancela inmediatamente, respeta periodo pagado.
+- [ ] Se expone un endpoint POST para solicitar la cancelación de la suscripción.
+- [ ] Se valida que el usuario tenga un plan Plus activo antes de proceder.
+- [ ] Se valida que no haya una transacción de pago en proceso al momento de cancelar.
+- [ ] La cancelación no es inmediata, el plan permanece activo hasta el último día del período pagado.
+- [ ] El sistema programa automáticamente el cambio de estado a Gratis al vencer el período.
+- [ ] Se requiere confirmación explícita del usuario antes de proceder con la cancelación.
+- [ ] Se envía correo de confirmación con fecha de vencimiento del plan Plus.
+- [ ] Se registra la fecha de cancelación, el motivo si el usuario lo proporciona y el ID del usuario en un log de auditoría.
+- [ ] Las plantillas Plus asignadas a hojas de vida existentes se mantienen visibles pero se bloquea su edición una vez que el plan venza.
+- [ ] El sistema no permite iniciar una nueva suscripción Plus si ya hay una cancelación pendiente de vencimiento, hasta que el período actual termine.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
