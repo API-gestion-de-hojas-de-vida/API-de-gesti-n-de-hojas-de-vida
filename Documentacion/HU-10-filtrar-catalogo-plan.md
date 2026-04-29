@@ -10,7 +10,8 @@ Para visualizar rápidamente las opciones que se ajustan a mi nivel de cuenta
 
 - El usuario selecciona un filtro de plan en el catálogo.
 - El sistema consulta la base de datos filtrando por la categoría seleccionada.
-- El sistema retorna las plantillas que corresponden al filtro aplicado.
+- El backend aplica la cláusula WHERE categoria = ? AND estado = 'activo' en la base de datos.
+- Se retorna la lista filtrada.
 
 ## ✅ Criterios de Aceptación
 
@@ -92,4 +93,3 @@ Para visualizar rápidamente las opciones que se ajustan a mi nivel de cuenta
 - [ ] Se devuelve HTTP 500 si hay error en la base de datos.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
 
----
