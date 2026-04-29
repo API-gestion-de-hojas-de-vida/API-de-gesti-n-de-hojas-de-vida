@@ -9,17 +9,19 @@ Para que el sistema genere una sesión válida que me permita navegar por rutas 
 ## 🔁 Flujo Esperado
 
 - El usuario ingresa su correo electrónico y contraseña.
-- El sistema valida que el correo exista en la base de datos.
-- El sistema valida que la contraseña coincida con la registrada.
-- El sistema genera una sesión o token válido.
+- El backend normaliza el correo a minúsculas y busca coincidencias exactas en la base de datos.
+- Si el correo existe, el sistema compara la contraseña ingresada con el hash encriptado de la base de datos.
+- Si coincide, el sistema genera un token de autenticación (ej. JWT) con un tiempo de expiración definido y los datos esenciales del usuario.
 - El sistema retorna confirmación de inicio de sesión exitoso.
 
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint POST para el inicio de sesión.
+- [ ] La validación de credenciales debe ser estricta (case-sensitive para contraseña, case-insensitive para correo).
 - [ ] Se valida que el correo exista en el sistema.
 - [ ] Se valida que la contraseña sea correcta.
+- [ ] Los mensajes de error nunca deben especificar si el fallo fue el correo o la contraseña para evitar enumeración de usuarios.
+- [ ] El token generado debe incluir el id y rol del usuario en su payload para manejo de permisos.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
