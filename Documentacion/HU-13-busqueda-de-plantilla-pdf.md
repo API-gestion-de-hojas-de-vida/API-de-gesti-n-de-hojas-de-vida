@@ -50,9 +50,13 @@ Para encontrar rápidamente un estilo acorde a mi profesión
 * El campo data siempre retorna una lista (vacía o con resultados).
 * Los resultados pueden venir ordenados por nombre o relevancia.
 * Si no hay resultados, el sistema retorna:
-  ```
-    { “mensaje”: “No se encontraron plantillas con ese término”, “data”: [], “success”: true }
-
+ ```
+ {
+  "mensaje": "No se encontraron plantillas con ese término",
+  "data": [],
+  "success": true
+}
+```
 ## 🔧 Notas Técnicas
 
 ### 🚀 Endpoint – Búsqueda de Plantillas
