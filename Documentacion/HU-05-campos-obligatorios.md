@@ -8,10 +8,11 @@ Para garantizar que ninguna hoja de vida quede incompleta
 
 ## 🔁 Flujo Esperado
 
-- El administrador selecciona una plantilla existente.
-- El administrador marca qué campos son obligatorios.
-- El sistema guarda la configuración de campos obligatorios.
-- El sistema retorna confirmación de actualización exitosa.
+- El administrador envía el ID de la plantilla y un array con los nombres de los campos que serán obligatorios.
+- El backend valida permisos de administrador.
+- El sistema busca la plantilla. Si no existe, aborta.
+- El sistema verifica que los campos obligatorios enviados existan dentro del array general de secciones de esa plantilla.
+- Se actualiza el registro en la base de datos.
 
 ## ✅ Criterios de Aceptación
 
@@ -100,3 +101,4 @@ Para garantizar que ninguna hoja de vida quede incompleta
 - [ ] Se devuelve HTTP 404 si la plantilla no existe.
 - [ ] Se devuelve HTTP 400 si los campos son inválidos.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
+
