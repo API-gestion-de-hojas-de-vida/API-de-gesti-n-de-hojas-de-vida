@@ -1,3 +1,4 @@
+
 # [HU-04] Crear Estructura Base de Plantilla
 
 ## 📖 Historia de Usuario
@@ -8,17 +9,17 @@ Para que el frontend sepa qué campos debe renderizar dinámicamente
 
 ## 🔁 Flujo Esperado
 
-- El administrador define el nombre de la plantilla y sus secciones.
-- El sistema valida que el nombre no esté duplicado.
-- El sistema guarda la estructura de la plantilla en la base de datos.
-- El sistema retorna confirmación de creación exitosa con el ID asignado.
+- El administrador ingresa el nombre de la plantilla, el array de secciones que la componen y su categoría por defecto.
+- El backend verifica mediante el token que el usuario tiene permisos de "Administrador".
+- El sistema valida que no exista otra plantilla activa con el mismo nombre exacto (ignorando espacios extra).
+- El sistema guarda la entidad en la base de datos y la retorna con su nuevo ID.
 
 ## ✅ Criterios de Aceptación
 
 ### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint POST para crear plantillas.
-- [ ] Se valida que el nombre de la plantilla sea único.
-- [ ] Se valida que las secciones no estén vacías.
+- [ ] Se debe validar autorización: Solo el rol Administrador puede consumir este endpoint.
+- [ ] El array de secciones debe contener al menos un elemento y no permitir strings vacíos.
+- [ ] Se debe aplicar trim al nombre para evitar duplicados accidentales.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
@@ -101,3 +102,4 @@ Para que el frontend sepa qué campos debe renderizar dinámicamente
 - [ ] Se devuelve HTTP 409 si el nombre ya existe.
 - [ ] Se devuelve HTTP 400 si las secciones están vacías.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
+
