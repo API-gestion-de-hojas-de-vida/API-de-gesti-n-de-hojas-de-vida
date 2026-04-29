@@ -8,6 +8,8 @@ Para iniciar el proceso de suscripción mensual
 
 🔁 Flujo Esperado
 
+🔁 Flujo Esperado
+
 * El usuario solicita ver el plan Plus.
 * El sistema valida autenticación.
 * El sistema verifica el plan actual.
