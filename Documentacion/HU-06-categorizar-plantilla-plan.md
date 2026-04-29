@@ -1,5 +1,3 @@
-# [HU-06] Categorizar Plantilla por Plan
-
 ## 📖 Historia de Usuario
 
 Como administrador
@@ -8,10 +6,10 @@ Para establecer las reglas de autorización de uso en la API
 
 ## 🔁 Flujo Esperado
 
-- El administrador selecciona una plantilla existente.
-- El administrador asigna una categoría: Gratis, Plus o Pro.
-- El sistema guarda la categoría en la base de datos.
-- El sistema retorna confirmación de actualización exitosa.
+- El administrador envía el ID de la plantilla y el string de la nueva categoría.
+- El backend valida el rol de administrador y la existencia de la plantilla.
+- El sistema valida que el string enviado coincida exactamente con un enum permitido (Gratis, Plus, Pro).
+- El sistema actualiza el registro y retorna el objeto actualizado.
 
 ## ✅ Criterios de Aceptación
 
