@@ -3,15 +3,16 @@
 ## 📖 Historia de Usuario
 
 Como usuario
-Quiero ver el catálogo de plantillas paginado
-Para que la respuesta del servidor sea rápida y no sature la vista
+Quiero que los diseños me vayan apareciendo de a pocos, en páginas que carguen rápido
+Para no abrumarme viendo cien opciones de golpe ni frustrarme porque mi celular o mi internet se quedan congelados
 
 ## 🔁 Flujo Esperado
 
-- El usuario accede al catálogo de plantillas.
-- El sistema consulta la base de datos con paginación.
-- El sistema retorna la página solicitada con el número de plantillas definido.
-- El usuario puede navegar entre páginas.
+- El frontend realiza un GET enviando page y size como Query Params.
+- El backend recibe los parámetros, aplicando valores por defecto si no existen
+- Se realiza la consulta en base de datos aplicando LIMIT y OFFSET.
+- Paralelamente, se calcula el total de registros activos para la paginación del frontend.
+- Se retorna el objeto de paginación estructurado.
 
 ## ✅ Criterios de Aceptación
 
@@ -94,4 +95,3 @@ Para que la respuesta del servidor sea rápida y no sature la vista
 - [ ] Se devuelve HTTP 400 si los parámetros son inválidos.
 - [ ] Se devuelve HTTP 500 si hay error en la base de datos.
 - [ ] El campo mensaje incluye texto claro y descriptivo.
-
