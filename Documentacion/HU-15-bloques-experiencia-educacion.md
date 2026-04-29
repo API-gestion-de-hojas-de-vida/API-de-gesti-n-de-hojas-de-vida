@@ -29,7 +29,13 @@ Para reflejar toda mi trayectoria profesional y académica
 1. 📆 Estructura de la información
 
 * Se responde con la siguiente estructura en JSON:
-    { “mensaje”: “Bloque agregado exitosamente”, “data”: { “id”: 1, “tipo”: “experiencia”, “empresa”: “Tech Corp”, “cargo”: “Desarrollador Backend”, “fechaInicio”: “2022-01-01”, “fechaFin”: “2024-01-01” }, “success”: true }
+    { “mensaje”: “Bloque agregado exitosamente”, “data”: { “id”: 1, 
+    “tipo”: “experiencia”,
+    “empresa”: “Tech Corp”, 
+    “cargo”: “Desarrollador Backend”,
+    “fechaInicio”: “2022-01-01”,
+    “fechaFin”: “2024-01-01” },
+    “success”: true }
 * Cada respuesta incluye el ID del bloque creado.
 * Los campos de fecha cumplen con un formato válido.
 * El campo tipo siempre está presente en la respuesta.
