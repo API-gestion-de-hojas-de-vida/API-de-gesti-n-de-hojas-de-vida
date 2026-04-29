@@ -22,19 +22,25 @@ Para asegurarme de que mi hoja de vida esté completa antes de exportarla o comp
 
 ### 2. 📆 Estructura de la información
 - [ ] Si hay campos vacíos, el sistema retorna:
+```
 {
   "mensaje": "Existen campos obligatorios sin completar",
   "data": {
-    "camposFaltantes": ["Perfil profesional", "Experiencia laboral"]
+    "camposFaltantes": [
+      "Perfil profesional",
+      "Experiencia laboral"
+    ]
   },
   "success": false
 }
+```
 - [ ] Si todo está completo, el sistema retorna:
+      ```
 {
   "mensaje": "Hoja de vida finalizada exitosamente",
   "data": { "id": 1, "estado": "finalizada" },
   "success": true
-}
+}```
 
 ## 🔧 Notas Técnicas
 
