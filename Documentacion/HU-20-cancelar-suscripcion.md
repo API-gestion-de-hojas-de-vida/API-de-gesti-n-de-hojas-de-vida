@@ -6,23 +6,24 @@ Como usuario Plus
 Quiero poder cancelar mi suscripción desde mi perfil
 Para actualizar mi estado en la base de datos y evitar futuros cobros
 
-## 🔁 Flujo Esperado
+🔁 Flujo Esperado
 
-- El usuario Plus accede a su perfil.
-- El usuario hace clic en "Cancelar suscripción".
-- El sistema solicita confirmación de la cancelación.
-- El sistema actualiza el estado del plan a Gratis al finalizar el período actual.
-- El sistema retorna confirmación de cancelación exitosa.
+* El usuario solicita cancelación.
+* El sistema valida plan activo.
+* El sistema solicita confirmación.
+* El sistema programa cancelación al final del periodo.
+* Retorna confirmación.
 
-## ✅ Criterios de Aceptación
+✅ Criterios de Aceptación
 
-### 1. 🔍 Estructura y lógica del servicio
-- [ ] Se expone un endpoint POST para cancelar la suscripción.
-- [ ] Se valida que el usuario tenga plan Plus activo.
-- [ ] El plan se mantiene activo hasta el fin del período pagado.
+1. 🔍 Estructura y lógica del servicio
+
+* Se valida que el usuario tenga plan Plus activo.
+* No se cancela inmediatamente, respeta periodo pagado.
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
+```
 {
   "mensaje": "Suscripción cancelada exitosamente",
   "data": {
@@ -32,13 +33,15 @@ Para actualizar mi estado en la base de datos y evitar futuros cobros
   },
   "success": true
 }
+```
 - [ ] Si el usuario no tiene plan Plus, el sistema retorna:
+```
 {
   "mensaje": "No tienes una suscripción Plus activa",
   "data": null,
   "success": false
 }
-
+```
 ## 🔧 Notas Técnicas
 
 ### 🚀 Endpoint – Cancelar Suscripción
