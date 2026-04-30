@@ -22,6 +22,7 @@ Para identificar inmediatamente si una plantilla es de pago o gratuita
 
 ### 2. 📆 Estructura de la información
 - [ ] Se responde con la siguiente estructura en JSON:
+```
 {
   "mensaje": "Catálogo obtenido exitosamente",
   "data": [
@@ -30,6 +31,7 @@ Para identificar inmediatamente si una plantilla es de pago o gratuita
   ],
   "success": true
 }
+```
 
 ## 🔧 Notas Técnicas
 
