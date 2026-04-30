@@ -1,4 +1,4 @@
-# [HU-11] Indicador Visual de Plantilla de Pago
+ # [HU-11] Indicador Visual de Plantilla de Pago
 
 ## 📖 Historia de Usuario
 
@@ -9,7 +9,7 @@ Para identificar inmediatamente si una plantilla es de pago o gratuita
 ## 🔁 Flujo Esperado
 
 - Durante la consulta del catálogo (GET /plantillas), el backend formatea la respuesta.
-- Se evalúa la columna categoria. Si es "Plus" o "Pro", se inyecta dinámicamente un atributo booleano esDePago: true, sino esDePago: false.
+- Se evalúa la columna categoria. Si es "Plus" o "Pro", se inyecta dinámicamente un atributo booleano es De Pago: true, sino es De Pago: false.
 - El sistema retorna cada plantilla con su categoría incluida.
 - El frontend muestra un indicador visual según la categoría.
 
