@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from domain.usuario import LoginRequest, LoginResponse
+from domain.usuario import LoginRequest, LoginResponse, LogoutRequest, LogoutResponse
 from service.usuario_service import UsuarioService
 from repository.usuario_repository import usuario_repository
 
