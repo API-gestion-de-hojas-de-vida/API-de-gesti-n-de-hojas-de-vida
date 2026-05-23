@@ -1,5 +1,12 @@
+# main.py
+
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
 from api.usuario_router import router as usuario_router
+from api.bloque_router import router as bloque_router
+
 
 app = FastAPI(
     title="API Gestión Hojas de Vida",
@@ -7,15 +14,37 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
+# ─── Manejador global de errores de validación Pydantic ──────────────────────
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=400,
+        content={
+            "message": "Los campos empresa y cargo son obligatorios",
+            "data": None,
+            "success": False,
+        },
+    )
+
+
+# ─── Routers ─────────────────────────────────────────────────────────────────
+
 app.include_router(usuario_router)
+app.include_router(bloque_router)
+
+
+# ─── Ruta raíz ───────────────────────────────────────────────────────────────
 
 @app.get("/", tags=["Root"])
 def root():
     return {
-        "mensaje": "API corriendo correctamente 🚀",
-        "docs":    "http://127.0.0.1:8000/docs",
+        "message": "API corriendo correctamente",
+        "docs": "http://127.0.0.1:8000/docs",
         "version": "1.0.0",
     }
+
 
 if __name__ == "__main__":
     import uvicorn
