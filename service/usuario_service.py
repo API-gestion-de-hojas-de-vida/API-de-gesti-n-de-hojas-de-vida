@@ -32,3 +32,30 @@ class UsuarioService:
             },
             success=True
         )
+
+        def logout(self, token: str) -> LogoutResponse:
+    from domain.usuario import LogoutResponse
+
+    # CASO DE ERROR: token vacío
+    if not token:
+        return LogoutResponse(
+            mensaje="El token no puede estar vacío",
+            data=None,
+            success=False
+        )
+
+    # CASO DE ERROR: token ya invalidado
+    if not self.repo.token_es_valido(token):
+        return LogoutResponse(
+            mensaje="Sesión no válida o ya expirada",
+            data=None,
+            success=False
+        )
+
+    # ÉXITO: invalidar el token
+    self.repo.invalidar_token(token)
+    return LogoutResponse(
+        mensaje="Sesión cerrada exitosamente",
+        data=None,
+        success=True
+    )

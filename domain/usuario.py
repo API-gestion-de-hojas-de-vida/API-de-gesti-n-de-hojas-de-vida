@@ -42,3 +42,11 @@ class Usuario:
             "email":  self.email,
             "rol":    self.rol,
         }
+
+        class LogoutRequest(BaseModel):
+    token: str
+
+class LogoutResponse(BaseModel):
+    mensaje: str
+    data: dict | None
+    success: bool

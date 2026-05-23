@@ -20,3 +20,16 @@ def login(datos: LoginRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+
+        from domain.usuario import LoginRequest, LoginResponse, LogoutRequest, LogoutResponse
+
+@router.post("/logout", response_model=LogoutResponse)
+def logout(datos: LogoutRequest):
+    """Cierra la sesión invalidando el token activo."""
+    try:
+        return service.logout(datos.token)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
