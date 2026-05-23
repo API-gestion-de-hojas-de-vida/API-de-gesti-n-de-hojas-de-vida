@@ -17,3 +17,4 @@ __pycache__/
 
 # Base de datos local (si es SQLite)
 *.sqlite
+venv/
