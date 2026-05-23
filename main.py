@@ -7,7 +7,11 @@ from fastapi.responses import JSONResponse
 from app.api.usuarioapi import router as usuario_router
 
 
-app = FastAPI(title="API de Gestión de Hojas de Vida")
+app = FastAPI(
+    title="API Gestión Hojas de Vida",
+    description="API REST con arquitectura de capas — FastAPI",
+    version="1.0.0",
+)
 
 
 # ─── Manejador global de errores de validación Pydantic ──────────────────────
@@ -31,9 +35,15 @@ app.include_router(usuario_router)
 
 # ─── Ruta raíz ────────────────────────────────────────────────────────────────
 
-@app.get("/")
-def read_root():
+@app.get("/", tags=["Root"])
+def root():
     return {
-        "message": "Bienvenido a la API de Gestión de Hojas de Vida",
-        "status": "Ready"
+        "mensaje": "API corriendo correctamente",
+        "docs": "http://127.0.0.1:8000/docs",
+        "version": "1.0.0",
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
