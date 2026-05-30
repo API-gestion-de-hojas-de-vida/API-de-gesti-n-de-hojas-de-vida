@@ -1,7 +1,7 @@
 # app/api/v1/plantilla_router.py
 from fastapi import APIRouter, HTTPException, status, Header
 from pydantic import ValidationError
-from app.domain.plantilla import PlantillaCreate
+from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import PlantillaService, DuplicadoException, AutorizacionException
 from app.repositories.plantilla_repository import plantilla_repository
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios
@@ -81,6 +81,47 @@ def actualizar_campos_obligatorios(
         # Caso 3: Campos inválidos (400)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "mensaje": str(e),
+                "data": None,
+                "success": False
+            }
+        )
+    
+# app/api/v1/plantilla_router.py
+
+@router.patch("/{id}/categoria", status_code=status.HTTP_200_OK)
+def categorizar_plantilla(
+    id: int,
+    datos: PlantillaUpdateCategoria,
+    x_user_role: str = Header(..., description="Simulación del rol del Token")
+):
+    try:
+        # Llamamos al servicio para procesar la lógica de negocio
+        plantilla_actualizada = service.actualizar_categoria_plantilla(
+            id, 
+            datos.categoria.value, # .value extrae el texto "Gratis", "Plus" o "Pro"
+            x_user_role
+        )
+        
+        # Respuesta exitosa (Caso 1 de tus pruebas)
+        return {
+            "mensaje": "Categoría asignada exitosamente",
+            "data": {
+                "id": plantilla_actualizada.id,
+                "nombre": plantilla_actualizada.nombre,
+                "categoria": plantilla_actualizada.categoria
+            },
+            "success": True
+        }
+        
+    except AutorizacionException as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+        
+    except NoEncontradoException as e:
+        # Caso 3: Si la plantilla no existe (404)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail={
                 "mensaje": str(e),
                 "data": None,
