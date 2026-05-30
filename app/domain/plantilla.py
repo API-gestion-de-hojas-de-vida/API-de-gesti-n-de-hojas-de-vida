@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import List
 
 # =====================================================================
-# ENUMS (HU-06)
+# 1. ENUMS Y VALIDACIONES DE ESTRUCTURA (HU-06)
 # =====================================================================
 class CategoriaPlan(str, Enum):
     GRATIS = "Gratis"
@@ -12,7 +12,7 @@ class CategoriaPlan(str, Enum):
     PRO = "Pro"
 
 # =====================================================================
-# ESQUEMAS DE PETICIÓN (PYDANTIC)
+# 2. ESQUEMAS DE PETICIÓN (PYDANTIC MODELS)
 # =====================================================================
 class PlantillaCreate(BaseModel):
     nombre: str = Field(..., description="Nombre de la plantilla")
@@ -26,7 +26,7 @@ class PlantillaUpdateCategoria(BaseModel):
     categoria: CategoriaPlan = Field(..., description="Nueva categoría asignada a la plantilla (Gratis, Plus, Pro)")
 
 # =====================================================================
-# ENTIDAD DE DOMINIO (OBJETO DE NEGOCIO)
+# 3. ENTIDAD DE DOMINIO (OBJETO DE NEGOCIO)
 # =====================================================================
 class Plantilla:
     def __init__(self, id: int, nombre: str, secciones: List[str], categoria: str):

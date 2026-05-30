@@ -42,6 +42,9 @@ class PlantillaRepository:
             plantilla.campos_obligatorios = campos
         return plantilla
     
+    # ==========================================
+    # MÉTODO DE LA HU-09 (Paginación)
+    # ==========================================
     def obtener_paginadas(self, page: int, size: int):
         # 1. Filtrar solo las plantillas que están activas
         activas = [p for p in self._datos if p.activa]
@@ -53,5 +56,17 @@ class PlantillaRepository:
 
         # 3. Retornar el total y el pedazo de la lista que corresponde a la página
         return total_activas, activas[inicio:fin]
+
+    # ==========================================
+    # MÉTODO DE LA HU-06 (Categorización)
+    # ==========================================
+    def actualizar_categoria(self, id: int, nueva_categoria: str):
+        # Reutilizamos el método de búsqueda que ya tenías
+        plantilla = self.obtener_por_id(id)
+        
+        if plantilla:
+            plantilla.categoria = nueva_categoria
+            
+        return plantilla
 
 plantilla_repository = PlantillaRepository()
