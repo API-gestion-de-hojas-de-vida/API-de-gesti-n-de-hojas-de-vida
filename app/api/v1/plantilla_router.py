@@ -9,6 +9,7 @@ from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException, 
     NoEncontradoException, CamposInvalidosException
 )
+from fastapi import APIRouter, HTTPException, status, Header, Query
 
 router = APIRouter(
     prefix="/api/v1/plantillas",
@@ -79,6 +80,46 @@ def actualizar_campos_obligatorios(
         
     except CamposInvalidosException as e:
         # Caso 3: Campos inválidos (400)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "mensaje": str(e),
+                "data": None,
+                "success": False
+            }
+        )
+@router.get("", status_code=status.HTTP_200_OK)
+def obtener_catalogo_paginado(
+    page: int = Query(1, description="Número de página"),
+    size: int = Query(10, description="Cantidad de registros por página")
+):
+    try:
+        # Llamamos al servicio
+        total, plantillas_paginadas = service.obtener_catalogo(page, size)
+        
+        # Mapeamos los datos exactamente como los pide el frontend
+        lista_formateada = [
+            {
+                "id": p.id,
+                "nombre": p.nombre,
+                "categoria": p.categoria
+            } for p in plantillas_paginadas
+        ]
+
+        # Caso 1 y Caso 2: Retorno exitoso
+        return {
+            "mensaje": "Catálogo obtenido exitosamente",
+            "data": {
+                "pagina": page,
+                "tamano": size,
+                "total": total,
+                "plantillas": lista_formateada
+            },
+            "success": True
+        }
+        
+    except CamposInvalidosException as e:
+        # Caso 3: Parámetros inválidos
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={

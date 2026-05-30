@@ -56,3 +56,10 @@ class PlantillaService:
             secciones=datos.secciones,
             categoria=datos.categoria
         )
+    def obtener_catalogo(self, page: int, size: int):
+        # Validar que sean números positivos (Caso 3)
+        if page < 1 or size < 1:
+            raise CamposInvalidosException("Los parámetros de paginación deben ser números positivos")
+
+        # Ir al repositorio por los datos
+        return self.repo.obtener_paginadas(page, size)

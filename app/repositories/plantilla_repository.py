@@ -41,5 +41,17 @@ class PlantillaRepository:
         if plantilla:
             plantilla.campos_obligatorios = campos
         return plantilla
+    
+    def obtener_paginadas(self, page: int, size: int):
+        # 1. Filtrar solo las plantillas que están activas
+        activas = [p for p in self._datos if p.activa]
+        total_activas = len(activas)
+
+        # 2. Calcular los índices para "cortar" la lista
+        inicio = (page - 1) * size
+        fin = inicio + size
+
+        # 3. Retornar el total y el pedazo de la lista que corresponde a la página
+        return total_activas, activas[inicio:fin]
 
 plantilla_repository = PlantillaRepository()
