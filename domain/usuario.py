@@ -1,30 +1,22 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 class LoginRequest(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
-    @field_validator("email")
-    @classmethod
-    def email_valido(cls, v):
-        if not v or "@" not in v:
-            raise ValueError("El correo no tiene un formato válido")
-        return v.lower().strip()
-
-    @field_validator("password")
-    @classmethod
-    def password_valido(cls, v):
-        if len(v) < 8:
-            raise ValueError("La contraseña debe tener mínimo 8 caracteres")
-        return v
-
 class LoginResponse(BaseModel):
-    mensaje: str
-    data: dict | None
+    message: str
+    data: Optional[dict] = None
     success: bool
 
 class LogoutRequest(BaseModel):
-    token: str
+    email: EmailStr
+
+class LogoutResponse(BaseModel):
+    message: str
+    data: Optional[dict] = None
+    success: bool
 
 class LogoutResponse(BaseModel):
     mensaje: str
