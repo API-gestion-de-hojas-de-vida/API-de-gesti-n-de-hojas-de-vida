@@ -33,11 +33,7 @@ def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., descr
     except DuplicadoException:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail={
-                "message": "Ya existe una plantilla con ese nombre",
-                "data": None,
-                "success": False
-            }
+            detail={"message": "Ya existe una plantilla con ese nombre", "data": None, "success": False}
         )
 
 # ==========================================
@@ -93,17 +89,33 @@ def categorizar_plantilla(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"mensaje": str(e), "data": None, "success": False})
 
 # ==========================================
-# 4. GET - CATÁLOGO PAGINADO (HU-09)
+# 4. GET - CATÁLOGO PAGINADO (HU-09) Y FILTRO (HU-10)
 # ==========================================
 @router.get("", status_code=status.HTTP_200_OK)
 def obtener_catalogo_paginado(
     page: int = Query(1, description="Número de página"),
-    size: int = Query(10, description="Cantidad de registros por página")
+    size: int = Query(10, description="Cantidad de registros por página"),
+    categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)")
 ):
     try:
-        total, plantillas_paginadas = service.obtener_catalogo(page, size)
+        total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria)
         lista_formateada = [{"id": p.id, "nombre": p.nombre, "categoria": p.categoria} for p in plantillas_paginadas]
         
+        # Estructura de respuesta de la HU-10 (Si se envía el filtro de categoría)
+        if categoria:
+            if total == 0:
+                return {
+                    "message": "No hay plantillas disponibles para este plan",
+                    "data": [],
+                    "success": True
+                }
+            return {
+                "message": "Filtro aplicado exitosamente",
+                "data": lista_formateada,
+                "success": True
+            }
+
+        # Estructura de respuesta de la HU-09 (Catálogo paginado general sin filtro)
         return {
             "mensaje": "Catálogo obtenido exitosamente",
             "data": {
@@ -114,5 +126,9 @@ def obtener_catalogo_paginado(
             },
             "success": True
         }
+        
     except CamposInvalidosException as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"mensaje": str(e), "data": None, "success": False})
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail={"mensaje": str(e), "data": None, "success": False}
+        )

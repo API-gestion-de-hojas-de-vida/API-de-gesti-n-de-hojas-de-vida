@@ -11,7 +11,6 @@ class PlantillaRepository:
         return self._datos
 
     def obtener_por_nombre(self, nombre: str) -> Optional[Plantilla]:
-        # Búsqueda ignorando espacios extra y mayúsculas/minúsculas
         nombre_limpio = " ".join(nombre.strip().split()).lower()
         for p in self._datos:
             p_limpio = " ".join(p.nombre.strip().split()).lower()
@@ -68,5 +67,28 @@ class PlantillaRepository:
             plantilla.categoria = nueva_categoria
             
         return plantilla
+
+    def actualizar_categoria(self, id: int, nueva_categoria: str):
+        plantilla = self.obtener_por_id(id)
+        if plantilla:
+            plantilla.categoria = nueva_categoria
+        return plantilla
+
+    # Método unificado para HU-09 y HU-10
+    def obtener_paginadas(self, page: int, size: int, categoria: str = None):
+        # 1. Filtrar solo las activas
+        activas = [p for p in self._datos if p.activa]
+        
+        # 2. Aplicar filtro de categoría si se solicita (HU-10)
+        if categoria:
+            activas = [p for p in activas if p.categoria == categoria]
+            
+        total_activas = len(activas)
+
+        # 3. Cortar la lista para la paginación (HU-09)
+        inicio = (page - 1) * size
+        fin = inicio + size
+
+        return total_activas, activas[inicio:fin]
 
 plantilla_repository = PlantillaRepository()

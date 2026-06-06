@@ -70,10 +70,13 @@ class PlantillaService:
         return self.repo.actualizar_categoria(id, categoria)
 
     # ==========================================
-    # HU-09: CATÁLOGO PAGINADO
+    # HU-09 Y HU-10: CATÁLOGO PAGINADO Y FILTRO
     # ==========================================
-    def obtener_catalogo(self, page: int, size: int):
+    def obtener_catalogo(self, page: int, size: int, categoria: str = None):
         if page < 1 or size < 1:
             raise CamposInvalidosException("Los parámetros de paginación deben ser números positivos")
 
-        return self.repo.obtener_paginadas(page, size)
+        if categoria and categoria not in ["Gratis", "Plus", "Pro"]:
+            raise CamposInvalidosException("Categoría no válida. Debe ser Gratis, Plus o Pro")
+
+        return self.repo.obtener_paginadas(page, size, categoria)

@@ -35,7 +35,7 @@ class Plantilla:
         self.secciones = secciones
         self.categoria = categoria
         self.campos_obligatorios: List[str] = [] 
-        self.activa: bool = True  # <--- Agregado para la HU-09
+        self.activa: bool = True  # Para la paginación y filtros (HU-09 y HU-10)
 
     def to_dict(self):
         return {
