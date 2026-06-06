@@ -6,6 +6,11 @@ class PlantillaResponse(BaseModel):
     data: Optional[dict]
     success: bool
 
+class ReporteUsoResponse(BaseModel):
+    message: str
+    data: list
+    success: bool
+
 class Plantilla:
     def __init__(self, id: int, nombre: str, estado: str = "activo"):
         self.id = id
