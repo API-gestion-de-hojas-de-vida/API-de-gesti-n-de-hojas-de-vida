@@ -5,6 +5,7 @@ class UsuarioRepository:
 
     def __init__(self):
         self._datos: list[Usuario] = []
+        self.tokens_invalidados: set = set()
         self._seed()
 
     def _seed(self):
@@ -19,14 +20,11 @@ class UsuarioRepository:
             None
         )
 
+    def invalidar_token(self, token: str) -> bool:
+        self.tokens_invalidados.add(token)
+        return True
+
+    def token_es_valido(self, token: str) -> bool:
+        return token not in self.tokens_invalidados
+
 usuario_repository = UsuarioRepository()
-
-# Lista de tokens invalidados (blacklist)
-tokens_invalidados: set = set()
-
-def invalidar_token(self, token: str) -> bool:
-    self.tokens_invalidados.add(token)
-    return True
-
-def token_es_valido(self, token: str) -> bool:
-    return token not in self.tokens_invalidados

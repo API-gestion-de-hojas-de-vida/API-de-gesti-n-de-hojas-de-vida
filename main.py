@@ -4,17 +4,16 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api.usuarioapi import router as usuario_router
+from api.usuario_router import router as usuario_router
+from api.plantilla_router import router as plantilla_router
 
 
 app = FastAPI(
-    title="API Gestión Hojas de Vida",
-    description="API REST con arquitectura de capas — FastAPI",
+    title="API Gestion Hojas de Vida",
+    description="API REST con arquitectura de capas - FastAPI",
     version="1.0.0",
 )
 
-
-# ─── Manejador global de errores de validación Pydantic ──────────────────────
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc: RequestValidationError):
@@ -28,17 +27,14 @@ async def validation_exception_handler(request, exc: RequestValidationError):
     )
 
 
-# ─── Routers ──────────────────────────────────────────────────────────────────
-
 app.include_router(usuario_router)
+app.include_router(plantilla_router)
 
-
-# ─── Ruta raíz ────────────────────────────────────────────────────────────────
 
 @app.get("/", tags=["Root"])
 def root():
     return {
-        "mensaje": "API corriendo correctamente",
+        "message": "API corriendo correctamente",
         "docs": "http://127.0.0.1:8000/docs",
         "version": "1.0.0",
     }

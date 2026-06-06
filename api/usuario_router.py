@@ -1,35 +1,45 @@
-from fastapi import APIRouter, HTTPException, status
-from domain.usuario import LoginRequest, LoginResponse
-from service.usuario_service import UsuarioService
-from repository.usuario_repository import usuario_repository
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+from domain.usuario import LoginRequest, LogoutRequest
+from service.usuario_service import usuario_service
 
 router = APIRouter(
     prefix="/api/v1/usuarios",
     tags=["Usuarios"],
 )
 
-service = UsuarioService(repo=usuario_repository)
-
-@router.post("/login", response_model=LoginResponse)
+@router.post("/login")
 def login(datos: LoginRequest):
-    """Autentica un usuario con email y contraseña."""
+    """Endpoint para el inicio de sesión de usuarios (HU-02)."""
     try:
-        return service.login(datos)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+        resultado = usuario_service.login(datos)
+        if not resultado.success:
+            return JSONResponse(status_code=401, content=resultado.dict())
+        return JSONResponse(status_code=200, content=resultado.dict())
+    except Exception:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "message": "No fue posible iniciar sesión",
+                "data": None,
+                "success": False
+            }
         )
 
-        from domain.usuario import LoginRequest, LoginResponse, LogoutRequest, LogoutResponse
-
-@router.post("/logout", response_model=LogoutResponse)
+@router.post("/logout")
 def logout(datos: LogoutRequest):
-    """Cierra la sesión invalidando el token activo."""
+    """Endpoint para el cierre de sesión de usuarios (HU-03)."""
     try:
-        return service.logout(datos.token)
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+        resultado = usuario_service.logout(datos)
+        if not resultado.success:
+            return JSONResponse(status_code=400, content=resultado.dict())
+        return JSONResponse(status_code=200, content=resultado.dict())
+    except Exception:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "message": "No fue posible cerrar sesión",
+                "data": None,
+                "success": False
+            }
         )
