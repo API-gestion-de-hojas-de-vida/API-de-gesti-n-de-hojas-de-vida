@@ -26,4 +26,15 @@ class PlantillaRepository:
             plantilla.desactivar()
         return plantilla
 
+    def obtener_reporte_uso(self) -> list:
+        reporte = [
+            {
+                "id": p.id,
+                "nombre": p.nombre,
+                "vecesUsada": 0
+            }
+            for p in self._datos
+        ]
+        return sorted(reporte, key=lambda x: x["vecesUsada"], reverse=True)
+
 plantilla_repository = PlantillaRepository()
