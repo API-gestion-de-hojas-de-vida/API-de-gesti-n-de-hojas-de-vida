@@ -17,9 +17,13 @@ class CamposInvalidosException(Exception):
 
 
 class PlantillaService:
+    # El constructor siempre va al principio
     def __init__(self, repo: PlantillaRepository):
         self.repo = repo
 
+    # ==========================================
+    # HU-04: CREAR PLANTILLA
+    # ==========================================
     def crear_plantilla(self, datos: PlantillaCreate, rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
@@ -34,6 +38,9 @@ class PlantillaService:
             categoria=datos.categoria
         )
 
+    # ==========================================
+    # HU-05: CAMPOS OBLIGATORIOS
+    # ==========================================
     def actualizar_campos_obligatorios(self, id: int, campos: List[str], rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
@@ -49,6 +56,9 @@ class PlantillaService:
 
         return self.repo.actualizar_campos(id, campos)
 
+    # ==========================================
+    # HU-06: CATEGORIZAR PLANTILLA
+    # ==========================================
     def actualizar_categoria_plantilla(self, id: int, categoria: str, rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
@@ -59,7 +69,9 @@ class PlantillaService:
 
         return self.repo.actualizar_categoria(id, categoria)
 
-    # Método unificado para HU-09 y HU-10 con validación de categorías permitidas
+    # ==========================================
+    # HU-09 Y HU-10: CATÁLOGO PAGINADO Y FILTRO
+    # ==========================================
     def obtener_catalogo(self, page: int, size: int, categoria: str = None):
         if page < 1 or size < 1:
             raise CamposInvalidosException("Los parámetros de paginación deben ser números positivos")

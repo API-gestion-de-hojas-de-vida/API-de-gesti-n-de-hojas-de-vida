@@ -16,6 +16,9 @@ router = APIRouter(
 
 service = PlantillaService(repo=plantilla_repository)
 
+# ==========================================
+# 1. POST - CREAR PLANTILLA (HU-04)
+# ==========================================
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
     try:
@@ -33,6 +36,9 @@ def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., descr
             detail={"message": "Ya existe una plantilla con ese nombre", "data": None, "success": False}
         )
 
+# ==========================================
+# 2. PATCH - CAMPOS OBLIGATORIOS (HU-05)
+# ==========================================
 @router.patch("/{id}/campos-obligatorios", status_code=status.HTTP_200_OK)
 def actualizar_campos_obligatorios(
     id: int,
@@ -57,6 +63,9 @@ def actualizar_campos_obligatorios(
     except CamposInvalidosException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"mensaje": str(e), "data": None, "success": False})
 
+# ==========================================
+# 3. PATCH - CATEGORÍA (HU-06)
+# ==========================================
 @router.patch("/{id}/categoria", status_code=status.HTTP_200_OK)
 def categorizar_plantilla(
     id: int,
@@ -79,7 +88,9 @@ def categorizar_plantilla(
     except NoEncontradoException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"mensaje": str(e), "data": None, "success": False})
 
-# Endpoint unificado de consulta GET (HU-09 y HU-10)
+# ==========================================
+# 4. GET - CATÁLOGO PAGINADO (HU-09) Y FILTRO (HU-10)
+# ==========================================
 @router.get("", status_code=status.HTTP_200_OK)
 def obtener_catalogo_paginado(
     page: int = Query(1, description="Número de página"),
@@ -104,7 +115,7 @@ def obtener_catalogo_paginado(
                 "success": True
             }
 
-        # Estructura de respuesta de la HU-09 (Catálogo paginado general)
+        # Estructura de respuesta de la HU-09 (Catálogo paginado general sin filtro)
         return {
             "mensaje": "Catálogo obtenido exitosamente",
             "data": {

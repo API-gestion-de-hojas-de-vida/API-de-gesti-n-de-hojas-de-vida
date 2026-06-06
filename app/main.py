@@ -13,10 +13,13 @@ app = FastAPI(
 # Capturar errores de validación de Pydantic (Caso 3: Secciones vacías)
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request, exc):
+    # Extrae el mensaje real que causó el error (ej: "Input should be 'Gratis', 'Plus' or 'Pro'")
+    error_real = exc.errors()[0]["msg"] if exc.errors() else "Error de validación de datos"
+    
     return JSONResponse(
         status_code=400,
         content={
-            "message": "Las secciones no pueden estar vacías",
+            "message": f"Dato inválido: {error_real}",
             "data": None,
             "success": False
         }
