@@ -11,10 +11,16 @@ class ReporteUsoResponse(BaseModel):
     data: list
     success: bool
 
+class CatalogoResponse(BaseModel):
+    message: str
+    data: list
+    success: bool
+
 class Plantilla:
-    def __init__(self, id: int, nombre: str, estado: str = "activo"):
+    def __init__(self, id: int, nombre: str, categoria: str, estado: str = "activo"):
         self.id = id
         self.nombre = nombre
+        self.categoria = categoria
         self.estado = estado
 
     def esta_activa(self) -> bool:
@@ -23,9 +29,20 @@ class Plantilla:
     def desactivar(self):
         self.estado = "inactivo"
 
+    def es_de_pago(self) -> bool:
+        return self.categoria in ["Plus", "Pro"]
+
     def to_response(self) -> dict:
         return {
             "id": self.id,
             "nombre": self.nombre,
             "estado": self.estado
+        }
+
+    def to_catalogo(self) -> dict:
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "categoria": self.categoria,
+            "esDePago": self.es_de_pago()
         }

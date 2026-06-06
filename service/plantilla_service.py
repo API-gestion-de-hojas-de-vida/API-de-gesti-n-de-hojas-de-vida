@@ -1,4 +1,4 @@
-from domain.plantilla import PlantillaResponse, ReporteUsoResponse
+from domain.plantilla import PlantillaResponse, ReporteUsoResponse, CatalogoResponse
 from repository.plantilla_repository import PlantillaRepository
 
 class PlantillaService:
@@ -44,6 +44,27 @@ class PlantillaService:
         except Exception:
             return ReporteUsoResponse(
                 message="No fue posible generar el reporte",
+                data=[],
+                success=False
+            )
+
+    def obtener_catalogo(self) -> CatalogoResponse:
+        try:
+            plantillas = self.repo.obtener_activas()
+            if not plantillas:
+                return CatalogoResponse(
+                    message="No hay plantillas disponibles",
+                    data=[],
+                    success=True
+                )
+            return CatalogoResponse(
+                message="Catálogo obtenido exitosamente",
+                data=[p.to_catalogo() for p in plantillas],
+                success=True
+            )
+        except Exception:
+            return CatalogoResponse(
+                message="No fue posible obtener el catálogo",
                 data=[],
                 success=False
             )
