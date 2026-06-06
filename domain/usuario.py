@@ -18,14 +18,8 @@ class LogoutResponse(BaseModel):
     data: Optional[dict] = None
     success: bool
 
-class LogoutResponse(BaseModel):
-    mensaje: str
-    data: dict | None
-    success: bool
-
 class Usuario:
-    def __init__(self, id: int, nombre: str, email: str,
-                 password: str, rol: str):
+    def __init__(self, id: int, nombre: str, email: str, password: str, rol: str):
         self.id       = id
         self.nombre   = nombre
         self.email    = email
@@ -42,3 +36,5 @@ class Usuario:
             "email":  self.email,
             "rol":    self.rol,
         }
+    
+    
