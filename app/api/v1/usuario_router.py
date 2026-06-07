@@ -1,6 +1,7 @@
 # app/api/v1/usuario_router.py
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
+from typing import Optional
 from app.services.usuarioapi import (
     UsuarioService,
     EmailDuplicadoError,
@@ -8,6 +9,7 @@ from app.services.usuarioapi import (
     CredencialesInvalidasError,
     CorreoNoRegistradoError,
     CamposObligatoriosError,
+    TokenInvalidoError,
 )
 from app.repositories.usuarioapi import UsuarioRepositoryMemoria
 from pydantic import BaseModel
@@ -92,3 +94,30 @@ def login(body: LoginRequest):
             "data": None,
             "success": False,
         })
+
+
+class LogoutRequest(BaseModel):
+    token: str
+
+@router.post("/logout")
+def logout(body: LogoutRequest):
+    if not body.token:
+        return JSONResponse(status_code=401, content={
+            "message": "Sesión no válida o ya expirada",
+            "data": None,
+            "success": False,
+        })
+    token = body.token
+    try:
+        _servicio.cerrar_sesion(token)
+        return JSONResponse(status_code=200, content={
+            "message": "Sesión cerrada exitosamente",
+            "data": None,
+            "success": True,
+        })
+    except TokenInvalidoError:
+        return JSONResponse(status_code=401, content={
+            "message": "Sesión no válida o ya expirada",
+            "data": None,
+            "success": False,
+        })  

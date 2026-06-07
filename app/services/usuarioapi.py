@@ -1,7 +1,7 @@
 # app/services/usuarioapi.py
 import re
 import bcrypt
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from app.domain.usuarioapi import Usuario
 from app.repositories.usuarioapi import IUsuarioRepository
@@ -22,10 +22,16 @@ class CorreoNoRegistradoError(Exception):
 class CamposObligatoriosError(Exception):
     pass
 
+class TokenInvalidoError(Exception):
+    pass
+
 # ─── Configuración JWT ───────────────────────────────────────────────────────
 SECRET_KEY = "clave_secreta_proyecto"
 ALGORITHM = "HS256"
 EXPIRACION_MINUTOS = 60
+
+# ─── Lista negra de tokens ───────────────────────────────────────────────────
+_tokens_invalidados: set = set()
 
 # ─── Servicio ────────────────────────────────────────────────────────────────
 class UsuarioService:
@@ -66,6 +72,15 @@ class UsuarioService:
             "email": usuario.email,
             "token": token,
         }
+
+    def cerrar_sesion(self, token: str) -> None:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            raise TokenInvalidoError()
+        if token in _tokens_invalidados:
+            raise TokenInvalidoError()
+        _tokens_invalidados.add(token)
 
     def _generar_token(self, usuario: Usuario) -> str:
         payload = {
