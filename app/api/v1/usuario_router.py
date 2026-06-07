@@ -40,8 +40,8 @@ def registrar(body: RegistroRequest):
             contrasena=body.contrasena,
         )
         return JSONResponse(status_code=201, content={
-            "message": "Usuario registrado exitosamente",
-            "data": {"id": usuario.id, "nombre": usuario.nombre, "email": usuario.email},
+            "message": "Registro exitoso",
+            "data": {"id": usuario.id, "nombre": usuario.nombre, "email": usuario.email, "rol": usuario.rol},
             "success": True,
         })
     except CamposObligatoriosError:
