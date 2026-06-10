@@ -1,4 +1,3 @@
-# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
 
@@ -11,7 +10,6 @@ class PlantillaRepository:
         return self._datos
 
     def obtener_por_nombre(self, nombre: str) -> Optional[Plantilla]:
-        # Búsqueda ignorando espacios extra y mayúsculas/minúsculas
         nombre_limpio = " ".join(nombre.strip().split()).lower()
         for p in self._datos:
             p_limpio = " ".join(p.nombre.strip().split()).lower()
@@ -26,6 +24,7 @@ class PlantillaRepository:
             secciones=secciones,
             categoria=categoria
         )
+        setattr(nueva, "activo", True)
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
@@ -48,5 +47,10 @@ class PlantillaRepository:
             plantilla.categoria = categoria
         return plantilla
 
+    def desactivar_logico(self, id: int) -> Optional[Plantilla]:
+        plantilla = self.obtener_por_id(id)
+        if plantilla:
+            setattr(plantilla, "activo", False)
+        return plantilla
+
 plantilla_repository = PlantillaRepository()
-    
