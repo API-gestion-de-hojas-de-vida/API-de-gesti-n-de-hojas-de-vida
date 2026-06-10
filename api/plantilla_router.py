@@ -2,7 +2,7 @@
 from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/api/v1/plantillas", tags=["Plantillas"])
-service = None # Se asume inyección externa o inicialización global previa
+service = None 
 
 @router.get("/{id}/preview")
 def obtener_vista_previa_plantilla(id: int):
