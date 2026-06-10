@@ -1,10 +1,9 @@
-# app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException,
-    NoEncontradoException, CamposInvalidosException
+    NoEncontradoException, CamposInvalidosException, ConflictoException
 )
 from app.repositories.plantilla_repository import plantilla_repository
 
@@ -58,7 +57,7 @@ def actualizar_campos_obligatorios(
         })
     except AutorizacionException:
         return JSONResponse(status_code=403, content={
-            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "message": "Solo el rol Administrador can consumir este endpoint",
             "data": None,
             "success": False
         })
@@ -102,6 +101,34 @@ def categorizar_plantilla(
     except NoEncontradoException:
         return JSONResponse(status_code=404, content={
             "message": "Plantilla no encontrada",
+            "data": None,
+            "success": False
+        })
+
+
+@router.patch("/{id}/desactivar", status_code=200)
+def desactivar_plantilla(
+    id: int,
+    x_user_role: str = Header(..., description="Simulación del rol del Token")
+):
+    try:
+        resultado = service.desactivar_plantilla_obsoleta(id=id, rol_usuario=x_user_role)
+        return JSONResponse(status_code=200, content=resultado)
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "data": None,
+            "success": False
+        })
+    except NoEncontradoException:
+        return JSONResponse(status_code=404, content={
+            "message": "Plantilla no encontrada",
+            "data": None,
+            "success": False
+        })
+    except ConflictoException:
+        return JSONResponse(status_code=409, content={
+            "message": "La plantilla ya se encuentra inactiva",
             "data": None,
             "success": False
         })
