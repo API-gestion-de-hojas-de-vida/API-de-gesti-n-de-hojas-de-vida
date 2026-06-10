@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any, Dict, List
 
 class PlantillaResponse(BaseModel):
     message: str
@@ -46,3 +46,15 @@ class Plantilla:
             "categoria": self.categoria,
             "esDePago": self.es_de_pago()
         }
+
+class PlantillaPreviewData(BaseModel):
+    id: int
+    nombre: str
+    categoria: str
+    secciones: List[str]
+    datosEjemplo: Dict[str, Any]
+
+class PlantillaPreviewResponse(BaseModel):
+    message: str
+    data: Optional[PlantillaPreviewData] = None
+    success: bool
