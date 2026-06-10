@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Header, JSONResponse
+from fastapi import APIRouter, Header
+from fastapi.responses import JSONResponse
 from typing import Optional
 from service.planes_service import PlanesService
 

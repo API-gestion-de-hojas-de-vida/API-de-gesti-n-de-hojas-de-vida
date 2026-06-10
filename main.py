@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from api.planes_router import router as planes_router
 from api.usuario_router import router as usuario_router
 from api.plantilla_router import router as plantilla_router
+# Tu nuevo router de pagos
+from api.pagos_router import router as pagos_router
 
 app = FastAPI(
     title="API Gestion Hojas de Vida",
@@ -22,9 +24,13 @@ async def validation_exception_handler(request, exc: RequestValidationError):
         },
     )
 
+# Routers de tus compañeros
 app.include_router(usuario_router)
 app.include_router(plantilla_router)
 app.include_router(planes_router)
+# Registro de tu router de pagos (HU-19)
+app.include_router(pagos_router)
+
 
 @app.get("/", tags=["Root"])
 def root():
