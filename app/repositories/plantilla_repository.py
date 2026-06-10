@@ -41,5 +41,12 @@ class PlantillaRepository:
         if plantilla:
             plantilla.campos_obligatorios = campos
         return plantilla
+    
+    def actualizar_categoria(self, id: int, categoria: str) -> Plantilla:
+        plantilla = self.obtener_por_id(id)
+        if plantilla:
+            plantilla.categoria = categoria
+        return plantilla
 
 plantilla_repository = PlantillaRepository()
+    

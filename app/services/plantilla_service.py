@@ -56,3 +56,20 @@ class PlantillaService:
             secciones=datos.secciones,
             categoria=datos.categoria
         )
+    
+    # app/services/plantilla_service.py
+
+    def actualizar_categoria_plantilla(self, id: int, categoria: str, rol_usuario: str):
+        # 1. Validar permisos
+        if rol_usuario != "Administrador":
+            raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
+
+        # 2. Buscar la plantilla
+        plantilla = self.repo.obtener_por_id(id)
+        
+        # 3. Validar si existe (Caso 3 de tus pruebas)
+        if not plantilla:
+            raise NoEncontradoException("Plantilla no encontrada")
+
+        # 4. Actualizar y retornar
+        return self.repo.actualizar_categoria(id, categoria)

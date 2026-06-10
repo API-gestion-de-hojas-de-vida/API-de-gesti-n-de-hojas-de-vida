@@ -1,8 +1,15 @@
 # app/domain/plantilla.py
+from enum import Enum
 from pydantic import BaseModel, Field, field_validator
 from typing import List
 
-# Schema de Entrada: Valida lo que envía el cliente
+
+class CategoriaPlan(str, Enum):
+    GRATIS = "Gratis"
+    PLUS = "Plus"
+    PRO = "Pro"
+
+
 class PlantillaCreate(BaseModel):
     nombre: str = Field(..., description="Nombre de la plantilla")
     secciones: List[str] = Field(..., description="Lista de secciones que componen la plantilla")
@@ -27,7 +34,10 @@ class PlantillaUpdateObligatorios(BaseModel):
     campos_obligatorios: List[str] = Field(..., description="Lista de campos obligatorios")
 
 
-# Entidad del Modelo de Negocio
+class PlantillaUpdateCategoria(BaseModel):
+    categoria: CategoriaPlan = Field(..., description="Nueva categoría: Gratis, Plus o Pro")
+
+
 class Plantilla:
     def __init__(self, id: int, nombre: str, secciones: List[str], categoria: str):
         self.id = id

@@ -1,7 +1,7 @@
 # app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
-from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios
+from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException,
     NoEncontradoException, CamposInvalidosException
@@ -71,6 +71,37 @@ def actualizar_campos_obligatorios(
     except CamposInvalidosException:
         return JSONResponse(status_code=400, content={
             "message": "Los campos enviados no existen en la plantilla",
+            "data": None,
+            "success": False
+        })
+
+
+@router.patch("/{id}/categoria", status_code=200)
+def categorizar_plantilla(
+    id: int,
+    datos: PlantillaUpdateCategoria,
+    x_user_role: str = Header(..., description="Simulación del rol del Token")
+):
+    try:
+        plantilla = service.actualizar_categoria_plantilla(id, datos.categoria.value, x_user_role)
+        return JSONResponse(status_code=200, content={
+            "message": "Categoría asignada exitosamente",
+            "data": {
+                "id": plantilla.id,
+                "nombre": plantilla.nombre,
+                "categoria": plantilla.categoria
+            },
+            "success": True
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "data": None,
+            "success": False
+        })
+    except NoEncontradoException:
+        return JSONResponse(status_code=404, content={
+            "message": "Plantilla no encontrada",
             "data": None,
             "success": False
         })

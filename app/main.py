@@ -14,7 +14,20 @@ app = FastAPI(
 
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request, exc):
-    error_real = exc.errors()[0]["msg"] if exc.errors() else "Error de validación de datos"
+    errors = exc.errors()
+    first_error = errors[0] if errors else {}
+    loc = str(first_error.get("loc", ""))
+    msg = str(first_error.get("msg", ""))
+
+    if "categoria" in loc or "enum" in msg.lower() or "gratis" in msg.lower():
+        return JSONResponse(
+            status_code=400,
+            content={
+                "message": "Categoría no válida. Debe ser Gratis, Plus o Pro",
+                "data": None,
+                "success": False
+            }
+        )
     return JSONResponse(
         status_code=400,
         content={
