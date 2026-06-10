@@ -1,8 +1,11 @@
 # app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
-from app.domain.plantilla import PlantillaCreate
-from app.services.plantilla_service import PlantillaService, DuplicadoException, AutorizacionException
+from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios
+from app.services.plantilla_service import (
+    PlantillaService, DuplicadoException, AutorizacionException,
+    NoEncontradoException, CamposInvalidosException
+)
 from app.repositories.plantilla_repository import plantilla_repository
 
 router = APIRouter(
@@ -11,6 +14,7 @@ router = APIRouter(
 )
 
 service = PlantillaService(repo=plantilla_repository)
+
 
 @router.post("/", status_code=201)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
@@ -30,6 +34,43 @@ def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., descr
     except DuplicadoException:
         return JSONResponse(status_code=409, content={
             "message": "Ya existe una plantilla con ese nombre",
+            "data": None,
+            "success": False
+        })
+
+
+@router.patch("/{id}/campos-obligatorios", status_code=200)
+def actualizar_campos_obligatorios(
+    id: int,
+    datos: PlantillaUpdateObligatorios,
+    x_user_role: str = Header(..., description="Simulación del rol del Token")
+):
+    try:
+        plantilla = service.actualizar_campos_obligatorios(id, datos.campos_obligatorios, x_user_role)
+        return JSONResponse(status_code=200, content={
+            "message": "Campos obligatorios actualizados exitosamente",
+            "data": {
+                "id": plantilla.id,
+                "nombre": plantilla.nombre,
+                "camposObligatorios": plantilla.campos_obligatorios
+            },
+            "success": True
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "data": None,
+            "success": False
+        })
+    except NoEncontradoException:
+        return JSONResponse(status_code=404, content={
+            "message": "Plantilla no encontrada",
+            "data": None,
+            "success": False
+        })
+    except CamposInvalidosException:
+        return JSONResponse(status_code=400, content={
+            "message": "Los campos enviados no existen en la plantilla",
             "data": None,
             "success": False
         })

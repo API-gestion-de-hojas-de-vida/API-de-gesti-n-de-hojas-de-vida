@@ -1,6 +1,6 @@
 # app/domain/plantilla.py
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List
+from typing import List
 
 # Schema de Entrada: Valida lo que envía el cliente
 class PlantillaCreate(BaseModel):
@@ -8,13 +8,11 @@ class PlantillaCreate(BaseModel):
     secciones: List[str] = Field(..., description="Lista de secciones que componen la plantilla")
     categoria: str = Field("Gratis", description="Categoría de la plantilla")
 
-    # Criterio de Aceptación: Aplicar trim al nombre
     @field_validator("nombre")
     @classmethod
     def limpiar_nombre(cls, v):
         return v.strip()
 
-    # Criterio de Aceptación: Al menos un elemento y sin strings vacíos
     @field_validator("secciones")
     @classmethod
     def validar_secciones(cls, v):
@@ -24,6 +22,11 @@ class PlantillaCreate(BaseModel):
             raise ValueError("Las secciones no pueden contener elementos vacíos")
         return [seccion.strip() for seccion in v]
 
+
+class PlantillaUpdateObligatorios(BaseModel):
+    campos_obligatorios: List[str] = Field(..., description="Lista de campos obligatorios")
+
+
 # Entidad del Modelo de Negocio
 class Plantilla:
     def __init__(self, id: int, nombre: str, secciones: List[str], categoria: str):
@@ -31,11 +34,15 @@ class Plantilla:
         self.nombre = nombre
         self.secciones = secciones
         self.categoria = categoria
+        self.campos_obligatorios: List[str] = []
+        self.activa: bool = True
 
     def to_dict(self):
         return {
             "id": self.id,
             "nombre": self.nombre,
             "secciones": self.secciones,
-            "categoria": self.categoria
+            "categoria": self.categoria,
+            "camposObligatorios": self.campos_obligatorios,
+            "activa": self.activa
         }
