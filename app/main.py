@@ -1,8 +1,10 @@
 # app/main.py
 from fastapi import FastAPI
-from app.api.v1.plantilla_router import router as plantilla_router
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from app.api.v1.validacion_router import router as validacion_router
+from app.api.v1.usuario_router import router as usuario_router
+from app.api.v1.plantilla_router import router as plantilla_router
 
 app = FastAPI(
     title="API de Gestión de Hojas de Vida",
@@ -10,9 +12,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Capturar errores de validación de Pydantic (Caso 3: Secciones vacías)
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request, exc):
+    error_real = exc.errors()[0]["msg"] if exc.errors() else "Error de validación de datos"
     return JSONResponse(
         status_code=400,
         content={
@@ -22,4 +24,6 @@ def validation_exception_handler(request, exc):
         }
     )
 
+app.include_router(validacion_router)
+app.include_router(usuario_router)
 app.include_router(plantilla_router)
