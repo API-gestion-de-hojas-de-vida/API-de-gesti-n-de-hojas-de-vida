@@ -29,17 +29,5 @@ class PlantillaRepository:
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
-    
-    def obtener_por_id(self, id: int) -> Optional[Plantilla]:
-        for p in self._datos:
-            if p.id == id:
-                return p
-        return None
-
-    def actualizar_campos(self, id: int, campos: List[str]) -> Plantilla:
-        plantilla = self.obtener_por_id(id)
-        if plantilla:
-            plantilla.campos_obligatorios = campos
-        return plantilla
 
 plantilla_repository = PlantillaRepository()
