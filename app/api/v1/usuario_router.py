@@ -1,4 +1,3 @@
-# app/api/v1/usuario_router.py
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 from typing import Optional
@@ -10,6 +9,8 @@ from app.services.usuarioapi import (
     CorreoNoRegistradoError,
     CamposObligatoriosError,
     TokenInvalidoError,
+    SuscripcionException,
+    NoAutenticadoException
 )
 from app.repositories.usuarioapi import UsuarioRepositoryMemoria
 from pydantic import BaseModel
@@ -120,4 +121,24 @@ def logout(body: LogoutRequest):
             "message": "Sesión no válida o ya expirada",
             "data": None,
             "success": False,
-        })  
+        })
+
+
+@router.post("/suscripcion/cancelar", status_code=200)
+def cancelar_suscripcion(
+    x_user_id: int = Header(..., description="ID del usuario obtenido del token"),
+    x_autenticado: bool = Header(True, description="Simulación de estado de autenticación")
+):
+    try:
+        resultado = _servicio.cancelar_suscripcion_plus(user_id=x_user_id, autenticado=x_autenticado)
+        return JSONResponse(status_code=200, content=resultado)
+    except NoAutenticadoException as e:
+        return JSONResponse(
+            status_code=401,
+            content={"mensaje": str(e), "data": None, "success": False}
+        )
+    except SuscripcionException as e:
+        return JSONResponse(
+            status_code=409,
+            content={"mensaje": str(e), "data": None, "success": False}
+        )
