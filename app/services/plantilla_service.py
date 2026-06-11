@@ -1,22 +1,33 @@
+# app/services/plantilla_service.py
 from typing import List
 from app.domain import plantilla
 from app.domain.plantilla import PlantillaCreate
 from app.repositories.plantilla_repository import PlantillaRepository
 
+
 class DuplicadoException(Exception):
     pass
+
 
 class AutorizacionException(Exception):
     pass
 
+
 class NoEncontradoException(Exception):
     pass
+
 
 class CamposInvalidosException(Exception):
     pass
 
+
 class ConflictoException(Exception):
     pass
+
+
+class PaginacionInvalidaException(Exception):
+    pass
+
 
 class PlantillaService:
 
@@ -57,7 +68,7 @@ class PlantillaService:
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
 
         plantilla = self.repo.obtener_por_id(id)
-        
+
         if not plantilla:
             raise NoEncontradoException("Plantilla no encontrada")
 
@@ -83,4 +94,18 @@ class PlantillaService:
                 "estado": "inactivo"
             },
             "success": True
+        }
+
+    # HU-09: catálogo paginado
+    def obtener_catalogo(self, page: int, size: int) -> dict:
+        if page < 1 or size < 1:
+            raise PaginacionInvalidaException("Los parámetros de paginación deben ser números positivos")
+
+        resultado = self.repo.obtener_catalogo_paginado(page, size)
+
+        return {
+            "pagina": page,
+            "tamano": size,
+            "total": resultado["total"],
+            "plantillas": resultado["plantillas"]
         }

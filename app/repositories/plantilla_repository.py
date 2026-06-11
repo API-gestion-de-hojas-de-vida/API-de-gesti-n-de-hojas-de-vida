@@ -1,5 +1,7 @@
+# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
+
 
 class PlantillaRepository:
     def __init__(self):
@@ -52,5 +54,20 @@ class PlantillaRepository:
         if plantilla:
             plantilla.activa = False
         return plantilla
+
+    # HU-09: catálogo paginado solo con plantillas activas
+    def obtener_catalogo_paginado(self, page: int, size: int) -> dict:
+        activas = [p for p in self._datos if p.activa]
+        total = len(activas)
+        offset = (page - 1) * size
+        pagina = activas[offset:offset + size]
+        return {
+            "total": total,
+            "plantillas": [
+                {"id": p.id, "nombre": p.nombre, "categoria": p.categoria}
+                for p in pagina
+            ]
+        }
+
 
 plantilla_repository = PlantillaRepository()

@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Header
+# app/api/v1/plantilla_router.py
+from fastapi import APIRouter, Header, Query
 from fastapi.responses import JSONResponse
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException,
-    NoEncontradoException, CamposInvalidosException, ConflictoException
+    NoEncontradoException, CamposInvalidosException, ConflictoException,
+    PaginacionInvalidaException
 )
 from app.repositories.plantilla_repository import plantilla_repository
 
@@ -13,6 +15,32 @@ router = APIRouter(
 )
 
 service = PlantillaService(repo=plantilla_repository)
+
+
+@router.get("/", status_code=200)
+def obtener_catalogo(
+    page: int = Query(default=1, description="Número de página"),
+    size: int = Query(default=10, description="Tamaño de página")
+):
+    try:
+        resultado = service.obtener_catalogo(page, size)
+        return JSONResponse(status_code=200, content={
+            "mensaje": "Catálogo obtenido exitosamente",
+            "data": resultado,
+            "success": True
+        })
+    except PaginacionInvalidaException as e:
+        return JSONResponse(status_code=400, content={
+            "mensaje": str(e),
+            "data": None,
+            "success": False
+        })
+    except Exception:
+        return JSONResponse(status_code=500, content={
+            "mensaje": "No fue posible obtener el catálogo",
+            "data": None,
+            "success": False
+        })
 
 
 @router.post("/", status_code=201)
@@ -57,7 +85,7 @@ def actualizar_campos_obligatorios(
         })
     except AutorizacionException:
         return JSONResponse(status_code=403, content={
-            "message": "Solo el rol Administrador can consumir este endpoint",
+            "message": "Solo el rol Administrador puede consumir este endpoint",
             "data": None,
             "success": False
         })
