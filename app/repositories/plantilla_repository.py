@@ -1,4 +1,3 @@
-# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
 
@@ -25,6 +24,7 @@ class PlantillaRepository:
             secciones=secciones,
             categoria=categoria
         )
+        setattr(nueva, "activo", True)
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
