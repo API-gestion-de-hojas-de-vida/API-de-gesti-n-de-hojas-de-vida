@@ -1,3 +1,4 @@
+# app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
@@ -57,7 +58,7 @@ def actualizar_campos_obligatorios(
         })
     except AutorizacionException:
         return JSONResponse(status_code=403, content={
-            "message": "Solo el rol Administrador can consumir este endpoint",
+            "message": "Solo el rol Administrador puede consumir este endpoint",
             "data": None,
             "success": False
         })
@@ -132,3 +133,40 @@ def desactivar_plantilla(
             "data": None,
             "success": False
         })
+
+
+# HU-08: Reporte de uso de plantillas
+@router.get("/reporte-uso", status_code=200)
+def reporte_uso(
+    x_user_role: str = Header(..., description="Simulación del rol del Token")
+):
+    try:
+        reporte = service.generar_reporte_uso(rol_usuario=x_user_role)
+
+        if not reporte:
+            return JSONResponse(status_code=200, content={
+                "message": "No hay plantillas registradas",
+                "data": [],
+                "success": True
+            })
+
+        return JSONResponse(status_code=200, content={
+            "message": "Reporte generado exitosamente",
+            "data": reporte,
+            "success": True
+        })
+
+    except AutorizacionException:
+        return JSONResponse(status_code=401, content={
+            "message": "No autorizado. Debe iniciar sesión",
+            "data": None,
+            "success": False
+        })
+
+    except Exception:
+        return JSONResponse(status_code=500, content={
+            "message": "No fue posible generar el reporte",
+            "data": None,
+            "success": False
+        })
+    

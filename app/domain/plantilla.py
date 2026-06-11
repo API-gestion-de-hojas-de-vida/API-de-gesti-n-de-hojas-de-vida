@@ -46,6 +46,7 @@ class Plantilla:
         self.categoria = categoria
         self.campos_obligatorios: List[str] = []
         self.activa: bool = True
+        self.veces_usada: int = 0  # HU-08: contador de uso
 
     def to_dict(self):
         return {
@@ -54,5 +55,6 @@ class Plantilla:
             "secciones": self.secciones,
             "categoria": self.categoria,
             "camposObligatorios": self.campos_obligatorios,
-            "activa": self.activa
+            "activa": self.activa,
+            "vecesUsada": self.veces_usada
         }

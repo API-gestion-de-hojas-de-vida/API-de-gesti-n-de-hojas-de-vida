@@ -1,22 +1,29 @@
+# app/services/plantilla_service.py
 from typing import List
 from app.domain import plantilla
 from app.domain.plantilla import PlantillaCreate
 from app.repositories.plantilla_repository import PlantillaRepository
 
+
 class DuplicadoException(Exception):
     pass
+
 
 class AutorizacionException(Exception):
     pass
 
+
 class NoEncontradoException(Exception):
     pass
+
 
 class CamposInvalidosException(Exception):
     pass
 
+
 class ConflictoException(Exception):
     pass
+
 
 class PlantillaService:
 
@@ -57,7 +64,7 @@ class PlantillaService:
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
 
         plantilla = self.repo.obtener_por_id(id)
-        
+
         if not plantilla:
             raise NoEncontradoException("Plantilla no encontrada")
 
@@ -84,3 +91,8 @@ class PlantillaService:
             },
             "success": True
         }
+
+def generar_reporte_uso(self, rol_usuario: str) -> List[dict]:
+    if rol_usuario != "Administrador":
+        raise AutorizacionException("No autorizado. Debe iniciar sesión")
+    return self.repo.obtener_reporte_uso()

@@ -1,5 +1,7 @@
+# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
+
 
 class PlantillaRepository:
     def __init__(self):
@@ -52,5 +54,21 @@ class PlantillaRepository:
         if plantilla:
             plantilla.activa = False
         return plantilla
+
+    # HU-08: reporte de uso ordenado de mayor a menor
+    def obtener_reporte_uso(self) -> List[dict]:
+        return sorted(
+            [
+                {
+                    "id": p.id,
+                    "nombre": p.nombre,
+                    "vecesUsada": p.veces_usada
+                }
+                for p in self._datos
+            ],
+            key=lambda x: x["vecesUsada"],
+            reverse=True
+        )
+
 
 plantilla_repository = PlantillaRepository()
