@@ -2,9 +2,13 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from app.api.v1.validacion_router import router as validacion_router
-from app.api.v1.usuario_router import router as usuario_router
+
+# 1. Importación de los routers
 from app.api.v1.plantilla_router import router as plantilla_router
+from app.api.v1.hoja_de_vida_router import router as hoja_de_vida_router
+
+# 2. Importación del repositorio para sembrar datos de prueba
+from app.repositories.hoja_de_vida_repository import hoja_de_vida_repository
 
 app = FastAPI(
     title="API de Gestión de Hojas de Vida",
@@ -12,31 +16,32 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# ==========================================
+# MANEJADORES DE EXCEPCIONES GLOBALES
+# ==========================================
+# Capturar errores de validación de Pydantic (Caso 3: Secciones vacías)
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request, exc):
-    errors = exc.errors()
-    first_error = errors[0] if errors else {}
-    loc = str(first_error.get("loc", ""))
-    msg = str(first_error.get("msg", ""))
-
-    if "categoria" in loc or "enum" in msg.lower() or "gratis" in msg.lower():
-        return JSONResponse(
-            status_code=400,
-            content={
-                "message": "Categoría no válida. Debe ser Gratis, Plus o Pro",
-                "data": None,
-                "success": False
-            }
-        )
+    # Extrae el mensaje real que causó el error (ej: "Input should be 'Gratis', 'Plus' or 'Pro'")
+    error_real = exc.errors()[0]["msg"] if exc.errors() else "Error de validación de datos"
+    
     return JSONResponse(
         status_code=400,
         content={
-            "message": "Las secciones no pueden estar vacías",
+            "message": f"Dato inválido: {error_real}",
             "data": None,
             "success": False
         }
     )
 
-app.include_router(validacion_router)
-app.include_router(usuario_router)
+# ==========================================
+# REGISTRO DE RUTAS (ENDPOINTS)
+# ==========================================
 app.include_router(plantilla_router)
+app.include_router(hoja_de_vida_router)
+
+# ==========================================
+# SEMILLERO DE DATOS TEMPORAL (Para Pruebas)
+# ==========================================
+# Creamos una hoja de vida para el usuario 1 vinculada a la plantilla 1
+hoja_de_vida_repository.crear_prueba(usuario_id=1, plantilla_id=1)
