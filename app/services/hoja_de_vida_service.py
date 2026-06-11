@@ -1,20 +1,27 @@
 # app/services/hoja_de_vida_service.py
-<<<<<<< HEAD
 import datetime
 from app.repositories.hoja_de_vida_repository import HojaDeVidaRepository
 from app.repositories.plantilla_repository import PlantillaRepository
 
+
 class NoEncontradoException(Exception):
     pass
+
+
+class AccesoNoAutorizadoException(Exception):
+    pass
+
 
 class CamposFaltantesException(Exception):
     def __init__(self, faltantes: list):
         self.faltantes = faltantes
         super().__init__("Existen campos obligatorios sin completar")
 
+
 class LongitudInvalidaException(Exception):
     def __init__(self, mensajes: list):
         super().__init__(", ".join(mensajes))
+
 
 class ExportacionInvalidaException(Exception):
     pass
@@ -22,7 +29,7 @@ class ExportacionInvalidaException(Exception):
 
 class HojaDeVidaService:
     LIMITES_LONGITUD = {
-        "descripción": 500, "perfil": 500, "experiencia": 1000, "educación": 800
+        "descripcion": 500, "perfil": 500, "experiencia": 1000, "educacion": 800
     }
     LIMITE_POR_DEFECTO = 255
 
@@ -71,45 +78,34 @@ class HojaDeVidaService:
         hv.estado = "finalizada"
         return hv
 
-    # ==========================================
-    # HU-21: LÓGICA DE EXPORTACIÓN PDF
-    # ==========================================
+    # HU-21: Exportación PDF
     def preparar_exportacion_pdf(self, id: int, usuario_id: int, plan_usuario: str, nombre_usuario: str):
-        # 1. Verificar existencia y pertenencia
         hv = self.repo_hv.obtener_por_id(id)
         if not hv or hv.usuario_id != usuario_id:
             raise NoEncontradoException("Hoja de vida no encontrada")
 
-        # 2. Verificar si tiene plantilla asignada
         if not hv.plantilla_id:
             raise ExportacionInvalidaException("Debe asignar una plantilla antes de exportar")
 
-        # 3. Verificar estado de finalización
         if hv.estado != "finalizada":
             raise ExportacionInvalidaException("La hoja de vida debe estar finalizada para exportarse")
 
-        # 4. Verificar que la plantilla asociada siga activa
         plantilla = self.repo_plantilla.obtener_por_id(hv.plantilla_id)
         if not plantilla or not plantilla.activa:
             raise ExportacionInvalidaException(
                 "La plantilla asignada ya no está activa. Por favor seleccione una nueva plantilla antes de exportar"
             )
 
-        # 5. Aplicar límites comerciales para plan Gratis (Máximo 3 descargas simuladas al mes)
         if plan_usuario.lower() == "gratis":
             contador = self.repo_hv.obtener_exportaciones_mensuales(usuario_id)
             if contador >= 3:
                 raise ExportacionInvalidaException("Ha superado el límite de exportaciones mensuales para el plan Gratis")
 
-        # 6. Registrar auditoría en el log
         self.repo_hv.registrar_auditoria(usuario_id, id)
 
-        # 7. Formatear nombre del archivo: NombreUsuario-HV-YYYY-MM-DD.pdf
         fecha_actual = datetime.date.today().strftime("%Y-%m-%d")
         nombre_archivo = f"{nombre_usuario.replace(' ', '_')}-HV-{fecha_actual}.pdf"
 
-        # 8. Simulación técnica de generación de bytes del PDF con Metadata incrustada
-        # En producción aquí se llamaría a ReportLab/WeasyPrint inyectando hv.datos y plantilla.categoria
         pdf_metadata_simulado = (
             f"%PDF-1.4\n"
             f"%Metadata: Author={nombre_usuario}, Created={fecha_actual}, Title=Hoja de Vida de {nombre_usuario}\n"
@@ -117,82 +113,38 @@ class HojaDeVidaService:
         ).encode("utf-8")
 
         return pdf_metadata_simulado, nombre_archivo
-    
-    # app/services/plantilla_service.py
-# ... (dentro de tu clase PlantillaService) ...
 
-    def obtener_catalogo(self, page: int, size: int, categoria: str = None, buscar: str = None):
-        if page < 1 or size < 1:
-            raise CamposInvalidosException("Los parámetros de paginación deben ser números positivos")
+    # HU-22: Abrir hoja de vida en modo edición
+    def abrir_modo_edicion(self, id: int, usuario_id: int) -> dict:
+        hv = self.repo_hv.obtener_por_id(id)
 
-        if categoria and categoria not in ["Gratis", "Plus", "Pro"]:
-            raise CamposInvalidosException("Categoría no válida. Debe ser Gratis, Plus o Pro")
+        if not hv:
+            raise NoEncontradoException("Hoja de vida no encontrada")
 
-        # Validación HU-13: Que no envíen espacios vacíos en la búsqueda
-        if buscar is not None and len(buscar.strip()) == 0:
-            raise CamposInvalidosException("El término de búsqueda no puede estar vacío")
+        if hv.usuario_id != usuario_id:
+            raise AccesoNoAutorizadoException("No tienes permiso para editar esta hoja de vida")
 
-        return self.repo.obtener_paginadas(page, size, categoria, buscar)
-=======
-from app.domain.hoja_de_vida import SeccionRequest, SeccionResponse
-from app.repositories.hoja_repository import HojaRepository
+        # Si está finalizada, volver a borrador
+        if hv.estado == "finalizada":
+            hv.estado = "borrador"
 
-LIMITES = {'nombre': 100, 'descripcion': 500, 'titulo': 150, 'telefono': 20, 'email': 100, 'direccion': 200, 'perfil': 1000, 'habilidades': 300}
-
-class HojaDeVidaService:
-    def __init__(self, repo: HojaRepository):
-        self.repo = repo
-
-    def guardar_secciones(self, hoja_id: int, datos: SeccionRequest) -> SeccionResponse:
-        if not self.repo.hoja_existe(hoja_id):
-            return SeccionResponse(message='La hoja de vida no existe', data=None, success=False)
-        errores = []
-        campos = datos.model_dump(exclude_none=True)
-        for campo, valor in campos.items():
-            limite = LIMITES.get(campo)
-            if limite and len(valor) > limite:
-                errores.append(f"El campo '{campo}' supera la longitud maxima permitida de {limite} caracteres")
-        if errores:
-            return SeccionResponse(message='; '.join(errores), data=None, success=False)
-        id_guardado = self.repo.guardar_secciones(hoja_id, campos)
-        return SeccionResponse(message='Informacion guardada exitosamente', data={'id': id_guardado}, success=True)
-
-    def agregar_experiencia(self, hoja_id: int, datos) -> 'BloqueResponse':
-        from app.domain.hoja_de_vida import BloqueResponse
-        if not self.repo.hoja_existe(hoja_id):
-            return BloqueResponse(message='La hoja de vida no existe', data=None, success=False)
-        if not datos.empresa or not datos.cargo:
-            return BloqueResponse(message='Los campos empresa y cargo son obligatorios', data=None, success=False)
-        bloque = self.repo.agregar_bloque(hoja_id, 'experiencia', datos.model_dump())
-        return BloqueResponse(message='Bloque agregado exitosamente', data=bloque, success=True)
-
-    def agregar_educacion(self, hoja_id: int, datos) -> 'BloqueResponse':
-        from app.domain.hoja_de_vida import BloqueResponse
-        if not self.repo.hoja_existe(hoja_id):
-            return BloqueResponse(message='La hoja de vida no existe', data=None, success=False)
-        if not datos.institucion or not datos.titulo:
-            return BloqueResponse(message='Los campos institucion y titulo son obligatorios', data=None, success=False)
-        bloque = self.repo.agregar_bloque(hoja_id, 'educacion', datos.model_dump())
-        return BloqueResponse(message='Bloque agregado exitosamente', data=bloque, success=True)
-
-    def finalizar(self, hoja_id: int):
-        from app.domain.hoja_de_vida import FinalizarResponse
-        if not self.repo.hoja_existe(hoja_id):
-            return FinalizarResponse(message='Hoja de vida no encontrada', data=None, success=False)
-        campos_faltantes = []
-        secciones = self.repo.get_secciones(hoja_id)
-        if not secciones.get('nombre'):
-            campos_faltantes.append('Nombre')
-        if not secciones.get('email'):
-            campos_faltantes.append('Email')
-        if not secciones.get('perfil'):
-            campos_faltantes.append('Perfil profesional')
-        if not self.repo.get_bloques(hoja_id, 'experiencia'):
-            campos_faltantes.append('Experiencia laboral')
-        if not self.repo.get_bloques(hoja_id, 'educacion'):
-            campos_faltantes.append('Educacion')
-        if campos_faltantes:
-            return FinalizarResponse(message='Existen campos obligatorios sin completar', data={'camposFaltantes': campos_faltantes}, success=False)
-        self.repo.finalizar(hoja_id)
-        return FinalizarResponse(message='Hoja de vida finalizada exitosamente', data={'id': hoja_id, 'estado': 'finalizada'}, success=True)
->>>>>>> origin/development
+        # Verificar plantilla
+        plantilla_info = None
+        advertencia_plantilla = None
+        if hv.plantilla_id:
+            plantilla = self.repo_plantilla.obtener_por_id(hv.plantilla_id)
+            if plantilla:
+                plantilla_info = {"id": plantilla.id, "nombre": plantilla.nombre}
+                if not plantilla.activa:
+                    advertencia_plantilla = "La plantilla asignada fue desactivada. Selecciona una nueva antes de finalizar."
+            
+        return {
+            "id": hv.id,
+            "estado": hv.estado,
+            "plantilla": plantilla_info,
+            "advertencia_plantilla": advertencia_plantilla,
+            "perfil": hv.datos.get("perfil"),
+            "experiencia": hv.datos.get("experiencia", []),
+            "educacion": hv.datos.get("educacion", []),
+            "habilidades": hv.datos.get("habilidades")
+        }

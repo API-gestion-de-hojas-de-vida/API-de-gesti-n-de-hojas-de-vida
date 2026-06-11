@@ -1,28 +1,10 @@
 # app/domain/hoja_de_vida.py
-<<<<<<< HEAD
 from pydantic import BaseModel, Field
-from typing import Dict
+from typing import Dict, Optional
+
 
 class SeccionesUpdate(BaseModel):
     secciones: Dict[str, str] = Field(..., description="Diccionario con los nombres de las secciones y sus textos")
-
-class HojaDeVida:
-    def __init__(self, id: int, usuario_id: int, plantilla_id: int = None, datos: dict = None):
-        self.id = id
-        self.usuario_id = usuario_id
-        self.plantilla_id = plantilla_id  # Puede inicializarse en None
-        self.datos = datos if datos is not None else {}
-        self.estado = "borrador"  # Estados: borrador, finalizada
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "estado": self.estado
-        }
-=======
-
-from pydantic import BaseModel
-from typing import Optional
 
 
 class SeccionRequest(BaseModel):
@@ -41,11 +23,13 @@ class SeccionResponse(BaseModel):
     data: Optional[dict]
     success: bool
 
+
 class ExperienciaRequest(BaseModel):
     empresa: Optional[str] = None
     cargo: Optional[str] = None
     fechaInicio: Optional[str] = None
     fechaFin: Optional[str] = None
+
 
 class EducacionRequest(BaseModel):
     institucion: Optional[str] = None
@@ -53,13 +37,29 @@ class EducacionRequest(BaseModel):
     fechaInicio: Optional[str] = None
     fechaFin: Optional[str] = None
 
+
 class BloqueResponse(BaseModel):
     message: str
     data: Optional[dict]
     success: bool
 
+
 class FinalizarResponse(BaseModel):
     message: str
     data: Optional[dict]
     success: bool
->>>>>>> origin/development
+
+
+class HojaDeVida:
+    def __init__(self, id: int, usuario_id: int, plantilla_id: int = None, datos: dict = None):
+        self.id = id
+        self.usuario_id = usuario_id
+        self.plantilla_id = plantilla_id
+        self.datos = datos if datos is not None else {}
+        self.estado = "borrador"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "estado": self.estado
+        }

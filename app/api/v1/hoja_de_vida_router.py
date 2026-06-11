@@ -1,11 +1,11 @@
 # app/api/v1/hoja_de_vida_router.py
-<<<<<<< HEAD
 from fastapi import APIRouter, Header, Response, status
 from fastapi.responses import JSONResponse
 from app.domain.hoja_de_vida import SeccionesUpdate
 from app.services.hoja_de_vida_service import (
-    HojaDeVidaService, NoEncontradoException, 
-    CamposFaltantesException, LongitudInvalidaException, ExportacionInvalidaException
+    HojaDeVidaService, NoEncontradoException,
+    CamposFaltantesException, LongitudInvalidaException, ExportacionInvalidaException,
+    AccesoNoAutorizadoException
 )
 from app.repositories.hoja_de_vida_repository import hoja_de_vida_repository
 from app.repositories.plantilla_repository import plantilla_repository
@@ -16,6 +16,7 @@ router = APIRouter(
 )
 
 service = HojaDeVidaService(hoja_de_vida_repository, plantilla_repository)
+
 
 @router.post("/{id}/secciones", status_code=200)
 def guardar_secciones(id: int, datos: SeccionesUpdate):
@@ -30,6 +31,7 @@ def guardar_secciones(id: int, datos: SeccionesUpdate):
         return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
     except LongitudInvalidaException as e:
         return JSONResponse(status_code=400, content={"mensaje": str(e), "data": None, "success": False})
+
 
 @router.post("/{id}/finalizar", status_code=200)
 def finalizar_hoja_de_vida(id: int):
@@ -50,9 +52,7 @@ def finalizar_hoja_de_vida(id: int):
             "success": False
         })
 
-# ==========================================
-# HU-21: ENDPOINT DE EXPORTACIÓN PDF
-# ==========================================
+
 @router.get("/{id}/exportar/pdf")
 def exportar_hoja_de_vida_pdf(
     id: int,
@@ -62,79 +62,35 @@ def exportar_hoja_de_vida_pdf(
 ):
     try:
         pdf_bytes, nombre_archivo = service.preparar_exportacion_pdf(
-            id=id, 
-            usuario_id=x_user_id, 
-            plan_usuario=x_user_plan, 
+            id=id,
+            usuario_id=x_user_id,
+            plan_usuario=x_user_plan,
             nombre_usuario=x_user_name
         )
-        
-        # Caso 1: Retorno exitoso del archivo binario descargable
         headers = {"Content-Disposition": f"attachment; filename={nombre_archivo}"}
         return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
 
     except NoEncontradoException as e:
         return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
-        
     except ExportacionInvalidaException as e:
-        # Casos 2 y 3: Validaciones de negocio fallidas (sin finalizar o sin plantilla)
         return JSONResponse(status_code=400, content={"mensaje": str(e), "data": None, "success": False})
-=======
-
-from fastapi import APIRouter, status
-from fastapi.responses import JSONResponse
-
-from app.domain.hoja_de_vida import SeccionRequest
-from app.services.hoja_de_vida_service import HojaDeVidaService
-from app.repositories.hoja_repository import hoja_repository
 
 
-router = APIRouter(
-    prefix='/api/v1/hojas-de-vida',
-    tags=['Hojas de Vida'],
-)
-
-service = HojaDeVidaService(repo=hoja_repository)
-
-
-@router.post('/{id}/secciones', summary='Guardar secciones de hoja de vida con validacion de longitud')
-def guardar_secciones(id: int, datos: SeccionRequest):
-
-    resultado = service.guardar_secciones(hoja_id=id, datos=datos)
-
-    if not resultado.success and 'no existe' in resultado.message:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={'message': resultado.message, 'data': None, 'success': False})
-
-    if not resultado.success:
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={'message': resultado.message, 'data': None, 'success': False})
-
-    return JSONResponse(status_code=status.HTTP_200_OK, content={'message': resultado.message, 'data': resultado.data, 'success': True})
-
-from app.domain.hoja_de_vida import ExperienciaRequest, EducacionRequest
-
-@router.post('/{id}/experiencia', summary='Agregar bloque de experiencia laboral')
-def agregar_experiencia(id: int, datos: ExperienciaRequest):
-    resultado = service.agregar_experiencia(hoja_id=id, datos=datos)
-    if not resultado.success and 'no existe' in resultado.message:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={'message': resultado.message, 'data': None, 'success': False})
-    if not resultado.success:
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={'message': resultado.message, 'data': None, 'success': False})
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content={'message': resultado.message, 'data': resultado.data, 'success': True})
-
-@router.post('/{id}/educacion', summary='Agregar bloque de educacion')
-def agregar_educacion(id: int, datos: EducacionRequest):
-    resultado = service.agregar_educacion(hoja_id=id, datos=datos)
-    if not resultado.success and 'no existe' in resultado.message:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={'message': resultado.message, 'data': None, 'success': False})
-    if not resultado.success:
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={'message': resultado.message, 'data': None, 'success': False})
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content={'message': resultado.message, 'data': resultado.data, 'success': True})
-
-@router.post('/{id}/finalizar', summary='Finalizar hoja de vida')
-def finalizar(id: int):
-    resultado = service.finalizar(hoja_id=id)
-    if not resultado.success and 'no encontrada' in resultado.message:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={'message': resultado.message, 'data': None, 'success': False})
-    if not resultado.success:
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={'message': resultado.message, 'data': resultado.data, 'success': False})
-    return JSONResponse(status_code=status.HTTP_200_OK, content={'message': resultado.message, 'data': resultado.data, 'success': True})
->>>>>>> origin/development
+# HU-22: Abrir hoja de vida en modo edición
+@router.get("/{id}/editar", status_code=200)
+def abrir_modo_edicion(
+    id: int,
+    x_user_id: int = Header(..., description="ID del usuario autenticado")
+):
+    try:
+        resultado = service.abrir_modo_edicion(id=id, usuario_id=x_user_id)
+        return JSONResponse(status_code=200, content={
+            "mensaje": "Hoja de vida cargada exitosamente",
+            "data": resultado,
+            "success": True
+        })
+    except AccesoNoAutorizadoException as e:
+        return JSONResponse(status_code=403, content={"mensaje": str(e), "data": None, "success": False})
+    except NoEncontradoException as e:
+        return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
+    # Endpoint temporal para crear hojas de vida de prueba — testing HU-22
