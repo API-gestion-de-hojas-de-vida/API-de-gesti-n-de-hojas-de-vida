@@ -11,7 +11,6 @@ class PlantillaRepository:
         return self._datos
 
     def obtener_por_nombre(self, nombre: str) -> Optional[Plantilla]:
-        # Búsqueda ignorando espacios extra y mayúsculas/minúsculas
         nombre_limpio = " ".join(nombre.strip().split()).lower()
         for p in self._datos:
             p_limpio = " ".join(p.nombre.strip().split()).lower()
@@ -29,7 +28,7 @@ class PlantillaRepository:
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
-    
+
     def obtener_por_id(self, id: int) -> Optional[Plantilla]:
         for p in self._datos:
             if p.id == id:
@@ -41,12 +40,17 @@ class PlantillaRepository:
         if plantilla:
             plantilla.campos_obligatorios = campos
         return plantilla
-    
+
     def actualizar_categoria(self, id: int, categoria: str) -> Plantilla:
         plantilla = self.obtener_por_id(id)
         if plantilla:
             plantilla.categoria = categoria
         return plantilla
 
+    def desactivar_logico(self, id: int) -> Optional[Plantilla]:
+        plantilla = self.obtener_por_id(id)
+        if plantilla:
+            plantilla.activa = False
+        return plantilla
+
 plantilla_repository = PlantillaRepository()
-    
