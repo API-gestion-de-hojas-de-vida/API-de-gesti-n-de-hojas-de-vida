@@ -1,4 +1,4 @@
-﻿ï»¿# app/repositories/plantilla_repository.py
+﻿# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
 
@@ -69,4 +69,9 @@ class PlantillaRepository:
         fin = inicio + size
         return total_activas, activas[inicio:fin]
 
+    # ==========================================
+    # HU-11: OBTENER ACTIVAS
+    # ==========================================
+    def obtener_activas(self):
+        return [p for p in self._datos if p.activa]
 plantilla_repository = PlantillaRepository()

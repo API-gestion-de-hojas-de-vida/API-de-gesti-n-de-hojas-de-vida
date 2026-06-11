@@ -1,13 +1,7 @@
-﻿<<<<<<< HEAD
-# app/api/v1/plantilla_router.py
+﻿# app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header, Query, status
 from fastapi.responses import JSONResponse
-=======
-﻿# app/api/v1/plantilla_router.py
-from fastapi import APIRouter, HTTPException, status, Header, Query
-from pydantic import ValidationError
 
->>>>>>> feature/HU-10-filtrar-catalogo
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException,
@@ -22,16 +16,8 @@ router = APIRouter(
 
 service = PlantillaService(repo=plantilla_repository)
 
-<<<<<<< HEAD
-@router.post("/", status_code=201)
-def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
-=======
-# ==========================================
-# 1. POST - CREAR PLANTILLA (HU-04)
-# ==========================================
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulacion del rol del Token")):
->>>>>>> feature/HU-10-filtrar-catalogo
     try:
         nueva_plantilla = service.crear_plantilla(datos, rol_usuario=x_user_role)
         return JSONResponse(status_code=201, content={
@@ -119,9 +105,7 @@ def categorizar_plantilla(
             "success": False
         })
 
-# ==========================================
 # ENDPOINT DE TUS COMPAÑEROS
-# ==========================================
 @router.patch("/{id}/desactivar", status_code=200)
 def desactivar_plantilla(
     id: int,
@@ -149,9 +133,7 @@ def desactivar_plantilla(
             "success": False
         })
 
-# ==========================================
 # TUS ENDPOINTS DE LAS HU-09 Y HU-10
-# ==========================================
 @router.get("", status_code=status.HTTP_200_OK)
 def obtener_catalogo_paginado(
     page: int = Query(1, description="Numero de pagina"),
@@ -192,4 +174,35 @@ def obtener_catalogo_paginado(
             "message": str(e),
             "data": None,
             "success": False
+        })
+
+# HU-11: CATALOGO CON INDICADOR VISUAL
+@router.get('/catalogo-indicador', status_code=200)
+def obtener_catalogo_con_indicador(
+    x_authorization: str = Header(None, alias='x-authorization', description='Bearer token')
+):
+    try:
+        resultado = service.obtener_catalogo_con_indicador(x_authorization)
+        if not resultado:
+            return JSONResponse(status_code=200, content={
+                'message': 'No hay plantillas disponibles',
+                'data': [],
+                'success': True
+            })
+        return JSONResponse(status_code=200, content={
+            'message': 'Catalogo obtenido exitosamente',
+            'data': resultado,
+            'success': True
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=401, content={
+            'message': 'No autorizado. Debe iniciar sesion',
+            'data': None,
+            'success': False
+        })
+    except Exception:
+        return JSONResponse(status_code=500, content={
+            'message': 'No fue posible obtener el catalogo',
+            'data': None,
+            'success': False
         })
