@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Header
+# app/api/v1/plantilla_router.py
+from fastapi import APIRouter, Header, Query, status
 from fastapi.responses import JSONResponse
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
@@ -13,7 +14,6 @@ router = APIRouter(
 )
 
 service = PlantillaService(repo=plantilla_repository)
-
 
 @router.post("/", status_code=201)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
@@ -36,7 +36,6 @@ def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., descr
             "data": None,
             "success": False
         })
-
 
 @router.patch("/{id}/campos-obligatorios", status_code=200)
 def actualizar_campos_obligatorios(
@@ -105,7 +104,9 @@ def categorizar_plantilla(
             "success": False
         })
 
-
+# ==========================================
+# ENDPOINT DE TUS COMPAÑEROS
+# ==========================================
 @router.patch("/{id}/desactivar", status_code=200)
 def desactivar_plantilla(
     id: int,
@@ -129,6 +130,52 @@ def desactivar_plantilla(
     except ConflictoException:
         return JSONResponse(status_code=409, content={
             "message": "La plantilla ya se encuentra inactiva",
+            "data": None,
+            "success": False
+        })
+
+# ==========================================
+# TUS ENDPOINTS DE LAS HU-09 Y HU-10
+# ==========================================
+@router.get("", status_code=status.HTTP_200_OK)
+def obtener_catalogo_paginado(
+    page: int = Query(1, description="Número de página"),
+    size: int = Query(10, description="Cantidad de registros por página"),
+    categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)")
+):
+    try:
+        total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria)
+        lista_formateada = [{"id": p.id, "nombre": p.nombre, "categoria": p.categoria} for p in plantillas_paginadas]
+        
+        # Estructura de respuesta de la HU-10 (Si se envía el filtro de categoría)
+        if categoria:
+            if total == 0:
+                return JSONResponse(status_code=200, content={
+                    "message": "No hay plantillas disponibles para este plan",
+                    "data": [],
+                    "success": True
+                })
+            return JSONResponse(status_code=200, content={
+                "message": "Filtro aplicado exitosamente",
+                "data": lista_formateada,
+                "success": True
+            })
+
+        # Estructura de respuesta de la HU-09 (Catálogo paginado general sin filtro)
+        return JSONResponse(status_code=200, content={
+            "mensaje": "Catálogo obtenido exitosamente",
+            "data": {
+                "pagina": page,
+                "tamano": size,
+                "total": total,
+                "plantillas": lista_formateada
+            },
+            "success": True
+        })
+        
+    except CamposInvalidosException as e:
+        return JSONResponse(status_code=400, content={
+            "mensaje": str(e),
             "data": None,
             "success": False
         })

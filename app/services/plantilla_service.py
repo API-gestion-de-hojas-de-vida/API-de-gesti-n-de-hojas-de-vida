@@ -1,5 +1,5 @@
+# app/services/plantilla_service.py
 from typing import List
-from app.domain import plantilla
 from app.domain.plantilla import PlantillaCreate
 from app.repositories.plantilla_repository import PlantillaRepository
 
@@ -63,6 +63,21 @@ class PlantillaService:
 
         return self.repo.actualizar_categoria(id, categoria)
 
+    # ==========================================
+    # HU-09 Y HU-10: CATÁLOGO PAGINADO Y FILTRO
+    # ==========================================
+    def obtener_catalogo(self, page: int, size: int, categoria: str = None):
+        if page < 1 or size < 1:
+            raise CamposInvalidosException("Los parámetros de paginación deben ser números positivos")
+
+        if categoria and categoria not in ["Gratis", "Plus", "Pro"]:
+            raise CamposInvalidosException("Categoría no válida. Debe ser Gratis, Plus o Pro")
+
+        return self.repo.obtener_paginadas(page, size, categoria)
+
+    # ==========================================
+    # LÓGICA DE TUS COMPAÑEROS: DESACTIVAR
+    # ==========================================
     def desactivar_plantilla_obsoleta(self, id: int, rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
