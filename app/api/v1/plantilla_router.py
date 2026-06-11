@@ -1,6 +1,10 @@
 ﻿# app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header, Query, status
 from fastapi.responses import JSONResponse
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/development
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException,
@@ -15,11 +19,16 @@ router = APIRouter(
 
 service = PlantillaService(repo=plantilla_repository)
 
+<<<<<<< HEAD
 # ==========================================
 # 1. POST - CREAR PLANTILLA (HU-04)
 # ==========================================
 @router.post("/", status_code=201)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
+=======
+@router.post("/", status_code=status.HTTP_201_CREATED)
+def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulacion del rol del Token")):
+>>>>>>> origin/development
     try:
         nueva_plantilla = service.crear_plantilla(datos, rol_usuario=x_user_role)
         return JSONResponse(status_code=201, content={
@@ -68,9 +77,13 @@ def categorizar_plantilla(id: int, datos: PlantillaUpdateCategoria, x_user_role:
     except NoEncontradoException:
         return JSONResponse(status_code=404, content={"message": "Plantilla no encontrada", "data": None, "success": False})
 
+<<<<<<< HEAD
 # ==========================================
 # 4. PATCH - DESACTIVAR PLANTILLA
 # ==========================================
+=======
+# ENDPOINT DE TUS COMPAÑEROS
+>>>>>>> origin/development
 @router.patch("/{id}/desactivar", status_code=200)
 def desactivar_plantilla(id: int, x_user_role: str = Header(..., description="Simulación del rol del Token")):
     try:
@@ -83,6 +96,7 @@ def desactivar_plantilla(id: int, x_user_role: str = Header(..., description="Si
     except ConflictoException:
         return JSONResponse(status_code=409, content={"message": "La plantilla ya se encuentra inactiva", "data": None, "success": False})
 
+<<<<<<< HEAD
 # ==========================================
 # 5. GET - CATÁLOGO, FILTRO Y BÚSQUEDA
 # ==========================================
@@ -98,6 +112,39 @@ def obtener_catalogo_paginado(
 ):
     try:
         total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria, buscar)
+=======
+# TUS ENDPOINTS DE LAS HU-09 Y HU-10
+@router.get("", status_code=status.HTTP_200_OK)
+def obtener_catalogo_paginado(
+    page: int = Query(1, description="Numero de pagina"),
+    size: int = Query(10, description="Cantidad de registros por pagina"),
+    categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)"),
+    buscar: str = Query(None, description="Buscar por palabra clave")
+):
+    try:
+        if buscar is not None:
+            try:
+                resultados = service.buscar_plantillas(buscar)
+            except CamposInvalidosException as e:
+                return JSONResponse(status_code=400, content={
+                    'message': str(e),
+                    'data': None,
+                    'success': False
+                })
+            if not resultados:
+                return JSONResponse(status_code=200, content={
+                    'message': 'No se encontraron plantillas con ese termino',
+                    'data': [],
+                    'success': True
+                })
+            lista = [{'id': p.id, 'nombre': p.nombre, 'categoria': p.categoria} for p in resultados]
+            return JSONResponse(status_code=200, content={
+                'message': 'Busqueda realizada exitosamente',
+                'data': lista,
+                'success': True
+            })
+        total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria)
+>>>>>>> origin/development
         lista_formateada = [{"id": p.id, "nombre": p.nombre, "categoria": p.categoria} for p in plantillas_paginadas]
         
         # HU-13: Respuesta específica para búsqueda
@@ -141,4 +188,62 @@ def obtener_catalogo_paginado(
         })
         
     except CamposInvalidosException as e:
+<<<<<<< HEAD
         return JSONResponse(status_code=400, content={"mensaje": str(e), "data": None, "success": False})
+=======
+        return JSONResponse(status_code=400, content={
+            "message": str(e),
+            "data": None,
+            "success": False
+        })
+
+# HU-11: CATALOGO CON INDICADOR VISUAL
+@router.get('/catalogo-indicador', status_code=200)
+def obtener_catalogo_con_indicador(
+    x_authorization: str = Header(None, alias='x-authorization', description='Bearer token')
+):
+    try:
+        resultado = service.obtener_catalogo_con_indicador(x_authorization)
+        if not resultado:
+            return JSONResponse(status_code=200, content={
+                'message': 'No hay plantillas disponibles',
+                'data': [],
+                'success': True
+            })
+        return JSONResponse(status_code=200, content={
+            'message': 'Catalogo obtenido exitosamente',
+            'data': resultado,
+            'success': True
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=401, content={
+            'message': 'No autorizado. Debe iniciar sesion',
+            'data': None,
+            'success': False
+        })
+    except Exception:
+        return JSONResponse(status_code=500, content={
+            'message': 'No fue posible obtener el catalogo',
+            'data': None,
+            'success': False
+        })
+
+# ==========================================
+# HU-12: VISTA PREVIA DE PLANTILLA
+# ==========================================
+@router.get('/{id}/preview', status_code=200)
+def obtener_preview(id: int):
+    try:
+        data = service.obtener_preview(id)
+        return JSONResponse(status_code=200, content={
+            'message': 'Plantilla obtenida exitosamente',
+            'data': data,
+            'success': True
+        })
+    except NoEncontradoException as e:
+        return JSONResponse(status_code=404, content={
+            'message': str(e),
+            'data': None,
+            'success': False
+        })
+>>>>>>> origin/development
