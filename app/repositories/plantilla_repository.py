@@ -1,4 +1,4 @@
-# app/repositories/plantilla_repository.py
+﻿# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
 
@@ -28,7 +28,7 @@ class PlantillaRepository:
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
-    
+
     def obtener_por_id(self, id: int) -> Optional[Plantilla]:
         for p in self._datos:
             if p.id == id:
@@ -40,55 +40,20 @@ class PlantillaRepository:
         if plantilla:
             plantilla.campos_obligatorios = campos
         return plantilla
-    
-    # ==========================================
-    # MÉTODO DE LA HU-09 (Paginación)
-    # ==========================================
-    def obtener_paginadas(self, page: int, size: int):
-        # 1. Filtrar solo las plantillas que están activas
-        activas = [p for p in self._datos if p.activa]
-        total_activas = len(activas)
 
-        # 2. Calcular los índices para "cortar" la lista
-        inicio = (page - 1) * size
-        fin = inicio + size
-
-        # 3. Retornar el total y el pedazo de la lista que corresponde a la página
-        return total_activas, activas[inicio:fin]
-
-    # ==========================================
-    # MÉTODO DE LA HU-06 (Categorización)
-    # ==========================================
-    def actualizar_categoria(self, id: int, nueva_categoria: str):
-        # Reutilizamos el método de búsqueda que ya tenías
-        plantilla = self.obtener_por_id(id)
-        
-        if plantilla:
-            plantilla.categoria = nueva_categoria
-            
-        return plantilla
-
-    def actualizar_categoria(self, id: int, nueva_categoria: str):
+    def actualizar_categoria(self, id: int, nueva_categoria: str) -> Plantilla:
         plantilla = self.obtener_por_id(id)
         if plantilla:
             plantilla.categoria = nueva_categoria
         return plantilla
 
-    # Método unificado para HU-09 y HU-10
     def obtener_paginadas(self, page: int, size: int, categoria: str = None):
-        # 1. Filtrar solo las activas
         activas = [p for p in self._datos if p.activa]
-        
-        # 2. Aplicar filtro de categoría si se solicita (HU-10)
         if categoria:
             activas = [p for p in activas if p.categoria == categoria]
-            
         total_activas = len(activas)
-
-        # 3. Cortar la lista para la paginación (HU-09)
         inicio = (page - 1) * size
         fin = inicio + size
-
         return total_activas, activas[inicio:fin]
 
 plantilla_repository = PlantillaRepository()

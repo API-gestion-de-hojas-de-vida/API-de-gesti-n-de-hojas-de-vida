@@ -1,4 +1,4 @@
-# app/api/v1/plantilla_router.py
+﻿# app/api/v1/plantilla_router.py
 from fastapi import APIRouter, HTTPException, status, Header, Query
 from pydantic import ValidationError
 
@@ -20,7 +20,7 @@ service = PlantillaService(repo=plantilla_repository)
 # 1. POST - CREAR PLANTILLA (HU-04)
 # ==========================================
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
+def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulacion del rol del Token")):
     try:
         nueva_plantilla = service.crear_plantilla(datos, rol_usuario=x_user_role)
         return {
@@ -43,7 +43,7 @@ def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., descr
 def actualizar_campos_obligatorios(
     id: int,
     datos: PlantillaUpdateObligatorios,
-    x_user_role: str = Header(..., description="Simulación del rol del Token")
+    x_user_role: str = Header(..., description="Simulacion del rol del Token")
 ):
     try:
         plantilla_actualizada = service.actualizar_campos_obligatorios(id, datos.campos_obligatorios, x_user_role)
@@ -64,18 +64,18 @@ def actualizar_campos_obligatorios(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"mensaje": str(e), "data": None, "success": False})
 
 # ==========================================
-# 3. PATCH - CATEGORÍA (HU-06)
+# 3. PATCH - CATEGORIA (HU-06)
 # ==========================================
 @router.patch("/{id}/categoria", status_code=status.HTTP_200_OK)
 def categorizar_plantilla(
     id: int,
     datos: PlantillaUpdateCategoria,
-    x_user_role: str = Header(..., description="Simulación del rol del Token")
+    x_user_role: str = Header(..., description="Simulacion del rol del Token")
 ):
     try:
         plantilla_actualizada = service.actualizar_categoria_plantilla(id, datos.categoria.value, x_user_role)
         return {
-            "mensaje": "Categoría asignada exitosamente",
+            "mensaje": "Categoria asignada exitosamente",
             "data": {
                 "id": plantilla_actualizada.id,
                 "nombre": plantilla_actualizada.nombre,
@@ -89,19 +89,18 @@ def categorizar_plantilla(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"mensaje": str(e), "data": None, "success": False})
 
 # ==========================================
-# 4. GET - CATÁLOGO PAGINADO (HU-09) Y FILTRO (HU-10)
+# 4. GET - CATALOGO PAGINADO (HU-09) Y FILTRO (HU-10)
 # ==========================================
 @router.get("", status_code=status.HTTP_200_OK)
 def obtener_catalogo_paginado(
-    page: int = Query(1, description="Número de página"),
-    size: int = Query(10, description="Cantidad de registros por página"),
+    page: int = Query(1, description="Numero de pagina"),
+    size: int = Query(10, description="Cantidad de registros por pagina"),
     categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)")
 ):
     try:
         total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria)
         lista_formateada = [{"id": p.id, "nombre": p.nombre, "categoria": p.categoria} for p in plantillas_paginadas]
         
-        # Estructura de respuesta de la HU-10 (Si se envía el filtro de categoría)
         if categoria:
             if total == 0:
                 return {
@@ -115,9 +114,8 @@ def obtener_catalogo_paginado(
                 "success": True
             }
 
-        # Estructura de respuesta de la HU-09 (Catálogo paginado general sin filtro)
         return {
-            "mensaje": "Catálogo obtenido exitosamente",
+            "mensaje": "Catalogo obtenido exitosamente",
             "data": {
                 "pagina": page,
                 "tamano": size,
@@ -129,6 +127,6 @@ def obtener_catalogo_paginado(
         
     except CamposInvalidosException as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail={"mensaje": str(e), "data": None, "success": False}
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"message": str(e), "data": None, "success": False}
         )
