@@ -6,9 +6,10 @@ from app.api.v1.validacion_router import router as validacion_router
 from app.api.v1.hoja_de_vida_router import router as hoja_de_vida_router
 from app.api.v1.usuario_router import router as usuario_router
 from app.api.v1.plantilla_router import router as plantilla_router
+from app.api.v1.planes_router import router as planes_router
 
 app = FastAPI(
-    title="API de GestiÃ³n de Hojas de Vida",
+    title="API de GestiÃƒÂ³n de Hojas de Vida",
     description="Backend oficial aplicando Arquitectura de Capas",
     version="1.0.0"
 )
@@ -24,7 +25,7 @@ def validation_exception_handler(request, exc):
         return JSONResponse(
             status_code=400,
             content={
-                "message": "CategorÃ­a no vÃ¡lida. Debe ser Gratis, Plus o Pro",
+                "message": "CategorÃƒÂ­a no vÃƒÂ¡lida. Debe ser Gratis, Plus o Pro",
                 "data": None,
                 "success": False
             }
@@ -32,7 +33,7 @@ def validation_exception_handler(request, exc):
     return JSONResponse(
         status_code=400,
         content={
-            "message": "Las secciones no pueden estar vacÃ­as",
+            "message": "Las secciones no pueden estar vacÃƒÂ­as",
             "data": None,
             "success": False
         }
@@ -42,3 +43,4 @@ app.include_router(validacion_router)
 app.include_router(hoja_de_vida_router)
 app.include_router(usuario_router)
 app.include_router(plantilla_router)
+app.include_router(planes_router)
