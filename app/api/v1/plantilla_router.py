@@ -1,6 +1,13 @@
+﻿<<<<<<< HEAD
 # app/api/v1/plantilla_router.py
 from fastapi import APIRouter, Header, Query, status
 from fastapi.responses import JSONResponse
+=======
+﻿# app/api/v1/plantilla_router.py
+from fastapi import APIRouter, HTTPException, status, Header, Query
+from pydantic import ValidationError
+
+>>>>>>> feature/HU-10-filtrar-catalogo
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
     PlantillaService, DuplicadoException, AutorizacionException,
@@ -15,8 +22,16 @@ router = APIRouter(
 
 service = PlantillaService(repo=plantilla_repository)
 
+<<<<<<< HEAD
 @router.post("/", status_code=201)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
+=======
+# ==========================================
+# 1. POST - CREAR PLANTILLA (HU-04)
+# ==========================================
+@router.post("/", status_code=status.HTTP_201_CREATED)
+def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulacion del rol del Token")):
+>>>>>>> feature/HU-10-filtrar-catalogo
     try:
         nueva_plantilla = service.crear_plantilla(datos, rol_usuario=x_user_role)
         return JSONResponse(status_code=201, content={
@@ -41,7 +56,7 @@ def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., descr
 def actualizar_campos_obligatorios(
     id: int,
     datos: PlantillaUpdateObligatorios,
-    x_user_role: str = Header(..., description="Simulación del rol del Token")
+    x_user_role: str = Header(..., description="Simulacion del rol del Token")
 ):
     try:
         plantilla = service.actualizar_campos_obligatorios(id, datos.campos_obligatorios, x_user_role)
@@ -78,7 +93,7 @@ def actualizar_campos_obligatorios(
 def categorizar_plantilla(
     id: int,
     datos: PlantillaUpdateCategoria,
-    x_user_role: str = Header(..., description="Simulación del rol del Token")
+    x_user_role: str = Header(..., description="Simulacion del rol del Token")
 ):
     try:
         plantilla = service.actualizar_categoria_plantilla(id, datos.categoria.value, x_user_role)
@@ -139,15 +154,14 @@ def desactivar_plantilla(
 # ==========================================
 @router.get("", status_code=status.HTTP_200_OK)
 def obtener_catalogo_paginado(
-    page: int = Query(1, description="Número de página"),
-    size: int = Query(10, description="Cantidad de registros por página"),
+    page: int = Query(1, description="Numero de pagina"),
+    size: int = Query(10, description="Cantidad de registros por pagina"),
     categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)")
 ):
     try:
         total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria)
         lista_formateada = [{"id": p.id, "nombre": p.nombre, "categoria": p.categoria} for p in plantillas_paginadas]
         
-        # Estructura de respuesta de la HU-10 (Si se envía el filtro de categoría)
         if categoria:
             if total == 0:
                 return JSONResponse(status_code=200, content={
@@ -175,7 +189,7 @@ def obtener_catalogo_paginado(
         
     except CamposInvalidosException as e:
         return JSONResponse(status_code=400, content={
-            "mensaje": str(e),
+            "message": str(e),
             "data": None,
             "success": False
         })
