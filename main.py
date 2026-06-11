@@ -1,19 +1,17 @@
-# main.py
-
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-
+from api.planes_router import router as planes_router
 from api.usuario_router import router as usuario_router
 from api.plantilla_router import router as plantilla_router
-
+# Tu nuevo router de pagos
+from api.pagos_router import router as pagos_router
 
 app = FastAPI(
     title="API Gestion Hojas de Vida",
     description="API REST con arquitectura de capas - FastAPI",
     version="1.0.0",
 )
-
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc: RequestValidationError):
@@ -26,9 +24,12 @@ async def validation_exception_handler(request, exc: RequestValidationError):
         },
     )
 
-
+# Routers de tus compañeros
 app.include_router(usuario_router)
 app.include_router(plantilla_router)
+app.include_router(planes_router)
+# Registro de tu router de pagos (HU-19)
+app.include_router(pagos_router)
 
 
 @app.get("/", tags=["Root"])
@@ -38,7 +39,6 @@ def root():
         "docs": "http://127.0.0.1:8000/docs",
         "version": "1.0.0",
     }
-
 
 if __name__ == "__main__":
     import uvicorn
