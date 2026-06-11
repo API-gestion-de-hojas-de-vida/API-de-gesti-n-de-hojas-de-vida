@@ -21,3 +21,21 @@ class HojaDeVidaService:
             return SeccionResponse(message='; '.join(errores), data=None, success=False)
         id_guardado = self.repo.guardar_secciones(hoja_id, campos)
         return SeccionResponse(message='Informacion guardada exitosamente', data={'id': id_guardado}, success=True)
+
+    def agregar_experiencia(self, hoja_id: int, datos) -> 'BloqueResponse':
+        from app.domain.hoja_de_vida import BloqueResponse
+        if not self.repo.hoja_existe(hoja_id):
+            return BloqueResponse(message='La hoja de vida no existe', data=None, success=False)
+        if not datos.empresa or not datos.cargo:
+            return BloqueResponse(message='Los campos empresa y cargo son obligatorios', data=None, success=False)
+        bloque = self.repo.agregar_bloque(hoja_id, 'experiencia', datos.model_dump())
+        return BloqueResponse(message='Bloque agregado exitosamente', data=bloque, success=True)
+
+    def agregar_educacion(self, hoja_id: int, datos) -> 'BloqueResponse':
+        from app.domain.hoja_de_vida import BloqueResponse
+        if not self.repo.hoja_existe(hoja_id):
+            return BloqueResponse(message='La hoja de vida no existe', data=None, success=False)
+        if not datos.institucion or not datos.titulo:
+            return BloqueResponse(message='Los campos institucion y titulo son obligatorios', data=None, success=False)
+        bloque = self.repo.agregar_bloque(hoja_id, 'educacion', datos.model_dump())
+        return BloqueResponse(message='Bloque agregado exitosamente', data=bloque, success=True)

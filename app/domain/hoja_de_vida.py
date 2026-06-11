@@ -19,3 +19,20 @@ class SeccionResponse(BaseModel):
     message: str
     data: Optional[dict]
     success: bool
+
+class ExperienciaRequest(BaseModel):
+    empresa: Optional[str] = None
+    cargo: Optional[str] = None
+    fechaInicio: Optional[str] = None
+    fechaFin: Optional[str] = None
+
+class EducacionRequest(BaseModel):
+    institucion: Optional[str] = None
+    titulo: Optional[str] = None
+    fechaInicio: Optional[str] = None
+    fechaFin: Optional[str] = None
+
+class BloqueResponse(BaseModel):
+    message: str
+    data: Optional[dict]
+    success: bool
