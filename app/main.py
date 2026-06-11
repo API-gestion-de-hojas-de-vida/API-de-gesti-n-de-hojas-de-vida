@@ -1,8 +1,14 @@
 # app/main.py
 from fastapi import FastAPI
-from app.api.v1.plantilla_router import router as plantilla_router
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+
+# 1. Importación de los routers
+from app.api.v1.plantilla_router import router as plantilla_router
+from app.api.v1.hoja_de_vida_router import router as hoja_de_vida_router
+
+# 2. Importación del repositorio para sembrar datos de prueba
+from app.repositories.hoja_de_vida_repository import hoja_de_vida_repository
 
 app = FastAPI(
     title="API de Gestión de Hojas de Vida",
@@ -10,6 +16,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# ==========================================
+# MANEJADORES DE EXCEPCIONES GLOBALES
+# ==========================================
 # Capturar errores de validación de Pydantic (Caso 3: Secciones vacías)
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request, exc):
@@ -25,4 +34,14 @@ def validation_exception_handler(request, exc):
         }
     )
 
+# ==========================================
+# REGISTRO DE RUTAS (ENDPOINTS)
+# ==========================================
 app.include_router(plantilla_router)
+app.include_router(hoja_de_vida_router)
+
+# ==========================================
+# SEMILLERO DE DATOS TEMPORAL (Para Pruebas)
+# ==========================================
+# Creamos una hoja de vida para el usuario 1 vinculada a la plantilla 1
+hoja_de_vida_repository.crear_prueba(usuario_id=1, plantilla_id=1)

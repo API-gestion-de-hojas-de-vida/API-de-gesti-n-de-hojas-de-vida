@@ -40,33 +40,6 @@ class PlantillaRepository:
         if plantilla:
             plantilla.campos_obligatorios = campos
         return plantilla
-    
-    # ==========================================
-    # MÉTODO DE LA HU-09 (Paginación)
-    # ==========================================
-    def obtener_paginadas(self, page: int, size: int):
-        # 1. Filtrar solo las plantillas que están activas
-        activas = [p for p in self._datos if p.activa]
-        total_activas = len(activas)
-
-        # 2. Calcular los índices para "cortar" la lista
-        inicio = (page - 1) * size
-        fin = inicio + size
-
-        # 3. Retornar el total y el pedazo de la lista que corresponde a la página
-        return total_activas, activas[inicio:fin]
-
-    # ==========================================
-    # MÉTODO DE LA HU-06 (Categorización)
-    # ==========================================
-    def actualizar_categoria(self, id: int, nueva_categoria: str):
-        # Reutilizamos el método de búsqueda que ya tenías
-        plantilla = self.obtener_por_id(id)
-        
-        if plantilla:
-            plantilla.categoria = nueva_categoria
-            
-        return plantilla
 
     def actualizar_categoria(self, id: int, nueva_categoria: str):
         plantilla = self.obtener_por_id(id)
@@ -74,18 +47,32 @@ class PlantillaRepository:
             plantilla.categoria = nueva_categoria
         return plantilla
 
-    # Método unificado para HU-09 y HU-10
-    def obtener_paginadas(self, page: int, size: int, categoria: str = None):
+    # El método de tus compañeros
+    def desactivar_logico(self, id: int):
+        plantilla = self.obtener_por_id(id)
+        if plantilla:
+            plantilla.activa = False
+        return plantilla
+
+    # ==========================================
+    # HU-09, HU-10 y HU-13: CATÁLOGO, FILTRO Y BÚSQUEDA
+    # ==========================================
+    def obtener_paginadas(self, page: int, size: int, categoria: str = None, buscar: str = None):
         # 1. Filtrar solo las activas
         activas = [p for p in self._datos if p.activa]
         
-        # 2. Aplicar filtro de categoría si se solicita (HU-10)
+        # 2. HU-10: Filtro de categoría
         if categoria:
             activas = [p for p in activas if p.categoria == categoria]
+
+        # 3. HU-13: Búsqueda por coincidencia parcial en nombre
+        if buscar:
+            termino = buscar.strip().lower()
+            activas = [p for p in activas if termino in p.nombre.lower()]
             
         total_activas = len(activas)
 
-        # 3. Cortar la lista para la paginación (HU-09)
+        # 4. HU-09: Paginación
         inicio = (page - 1) * size
         fin = inicio + size
 
