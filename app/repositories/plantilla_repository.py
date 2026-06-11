@@ -1,4 +1,3 @@
-# app/repositories/plantilla_repository.py
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
 
@@ -25,10 +24,11 @@ class PlantillaRepository:
             secciones=secciones,
             categoria=categoria
         )
+        setattr(nueva, "activo", True)
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
-    
+
     def obtener_por_id(self, id: int) -> Optional[Plantilla]:
         for p in self._datos:
             if p.id == id:
@@ -40,32 +40,17 @@ class PlantillaRepository:
         if plantilla:
             plantilla.campos_obligatorios = campos
         return plantilla
-    
-    # ==========================================
-    # MÉTODO DE LA HU-09 (Paginación)
-    # ==========================================
-    def obtener_paginadas(self, page: int, size: int):
-        # 1. Filtrar solo las plantillas que están activas
-        activas = [p for p in self._datos if p.activa]
-        total_activas = len(activas)
 
-        # 2. Calcular los índices para "cortar" la lista
-        inicio = (page - 1) * size
-        fin = inicio + size
-
-        # 3. Retornar el total y el pedazo de la lista que corresponde a la página
-        return total_activas, activas[inicio:fin]
-
-    # ==========================================
-    # MÉTODO DE LA HU-06 (Categorización)
-    # ==========================================
-    def actualizar_categoria(self, id: int, nueva_categoria: str):
-        # Reutilizamos el método de búsqueda que ya tenías
+    def actualizar_categoria(self, id: int, categoria: str) -> Plantilla:
         plantilla = self.obtener_por_id(id)
-        
         if plantilla:
-            plantilla.categoria = nueva_categoria
-            
+            plantilla.categoria = categoria
+        return plantilla
+
+    def desactivar_logico(self, id: int) -> Optional[Plantilla]:
+        plantilla = self.obtener_por_id(id)
+        if plantilla:
+            plantilla.activa = False
         return plantilla
 
     def actualizar_categoria(self, id: int, nueva_categoria: str):

@@ -1,11 +1,10 @@
 # app/api/v1/plantilla_router.py
-from fastapi import APIRouter, HTTPException, status, Header, Query
-from pydantic import ValidationError
-
+from fastapi import APIRouter, Header, Query, status
+from fastapi.responses import JSONResponse
 from app.domain.plantilla import PlantillaCreate, PlantillaUpdateObligatorios, PlantillaUpdateCategoria
 from app.services.plantilla_service import (
-    PlantillaService, DuplicadoException, AutorizacionException, 
-    NoEncontradoException, CamposInvalidosException
+    PlantillaService, DuplicadoException, AutorizacionException,
+    NoEncontradoException, CamposInvalidosException, ConflictoException
 )
 from app.repositories.plantilla_repository import plantilla_repository
 
@@ -16,80 +15,127 @@ router = APIRouter(
 
 service = PlantillaService(repo=plantilla_repository)
 
-# ==========================================
-# 1. POST - CREAR PLANTILLA (HU-04)
-# ==========================================
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=201)
 def crear_plantilla(datos: PlantillaCreate, x_user_role: str = Header(..., description="Simulación del rol del Token")):
     try:
         nueva_plantilla = service.crear_plantilla(datos, rol_usuario=x_user_role)
-        return {
+        return JSONResponse(status_code=201, content={
             "message": "Plantilla creada exitosamente",
             "data": nueva_plantilla.to_dict(),
             "success": True
-        }
-    except AutorizacionException as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "data": None,
+            "success": False
+        })
     except DuplicadoException:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={"message": "Ya existe una plantilla con ese nombre", "data": None, "success": False}
-        )
+        return JSONResponse(status_code=409, content={
+            "message": "Ya existe una plantilla con ese nombre",
+            "data": None,
+            "success": False
+        })
 
-# ==========================================
-# 2. PATCH - CAMPOS OBLIGATORIOS (HU-05)
-# ==========================================
-@router.patch("/{id}/campos-obligatorios", status_code=status.HTTP_200_OK)
+@router.patch("/{id}/campos-obligatorios", status_code=200)
 def actualizar_campos_obligatorios(
     id: int,
     datos: PlantillaUpdateObligatorios,
     x_user_role: str = Header(..., description="Simulación del rol del Token")
 ):
     try:
-        plantilla_actualizada = service.actualizar_campos_obligatorios(id, datos.campos_obligatorios, x_user_role)
-        return {
-            "mensaje": "Campos obligatorios actualizados exitosamente",
+        plantilla = service.actualizar_campos_obligatorios(id, datos.campos_obligatorios, x_user_role)
+        return JSONResponse(status_code=200, content={
+            "message": "Campos obligatorios actualizados exitosamente",
             "data": {
-                "id": plantilla_actualizada.id,
-                "nombre": plantilla_actualizada.nombre,
-                "camposObligatorios": plantilla_actualizada.campos_obligatorios
+                "id": plantilla.id,
+                "nombre": plantilla.nombre,
+                "camposObligatorios": plantilla.campos_obligatorios
             },
             "success": True
-        }
-    except AutorizacionException as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
-    except NoEncontradoException as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"mensaje": str(e), "data": None, "success": False})
-    except CamposInvalidosException as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"mensaje": str(e), "data": None, "success": False})
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador can consumir este endpoint",
+            "data": None,
+            "success": False
+        })
+    except NoEncontradoException:
+        return JSONResponse(status_code=404, content={
+            "message": "Plantilla no encontrada",
+            "data": None,
+            "success": False
+        })
+    except CamposInvalidosException:
+        return JSONResponse(status_code=400, content={
+            "message": "Los campos enviados no existen en la plantilla",
+            "data": None,
+            "success": False
+        })
 
-# ==========================================
-# 3. PATCH - CATEGORÍA (HU-06)
-# ==========================================
-@router.patch("/{id}/categoria", status_code=status.HTTP_200_OK)
+
+@router.patch("/{id}/categoria", status_code=200)
 def categorizar_plantilla(
     id: int,
     datos: PlantillaUpdateCategoria,
     x_user_role: str = Header(..., description="Simulación del rol del Token")
 ):
     try:
-        plantilla_actualizada = service.actualizar_categoria_plantilla(id, datos.categoria.value, x_user_role)
-        return {
-            "mensaje": "Categoría asignada exitosamente",
+        plantilla = service.actualizar_categoria_plantilla(id, datos.categoria.value, x_user_role)
+        return JSONResponse(status_code=200, content={
+            "message": "Categoría asignada exitosamente",
             "data": {
-                "id": plantilla_actualizada.id,
-                "nombre": plantilla_actualizada.nombre,
-                "categoria": plantilla_actualizada.categoria
+                "id": plantilla.id,
+                "nombre": plantilla.nombre,
+                "categoria": plantilla.categoria
             },
             "success": True
-        }
-    except AutorizacionException as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
-    except NoEncontradoException as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"mensaje": str(e), "data": None, "success": False})
+        })
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "data": None,
+            "success": False
+        })
+    except NoEncontradoException:
+        return JSONResponse(status_code=404, content={
+            "message": "Plantilla no encontrada",
+            "data": None,
+            "success": False
+        })
 
 # ==========================================
-# 4. GET - CATÁLOGO PAGINADO (HU-09) Y FILTRO (HU-10)
+# ENDPOINT DE TUS COMPAÑEROS
+# ==========================================
+@router.patch("/{id}/desactivar", status_code=200)
+def desactivar_plantilla(
+    id: int,
+    x_user_role: str = Header(..., description="Simulación del rol del Token")
+):
+    try:
+        resultado = service.desactivar_plantilla_obsoleta(id=id, rol_usuario=x_user_role)
+        return JSONResponse(status_code=200, content=resultado)
+    except AutorizacionException:
+        return JSONResponse(status_code=403, content={
+            "message": "Solo el rol Administrador puede consumir este endpoint",
+            "data": None,
+            "success": False
+        })
+    except NoEncontradoException:
+        return JSONResponse(status_code=404, content={
+            "message": "Plantilla no encontrada",
+            "data": None,
+            "success": False
+        })
+    except ConflictoException:
+        return JSONResponse(status_code=409, content={
+            "message": "La plantilla ya se encuentra inactiva",
+            "data": None,
+            "success": False
+        })
+
+# ==========================================
+# TUS ENDPOINTS DE LAS HU-09 Y HU-10
 # ==========================================
 @router.get("", status_code=status.HTTP_200_OK)
 def obtener_catalogo_paginado(
@@ -104,19 +150,19 @@ def obtener_catalogo_paginado(
         # Estructura de respuesta de la HU-10 (Si se envía el filtro de categoría)
         if categoria:
             if total == 0:
-                return {
+                return JSONResponse(status_code=200, content={
                     "message": "No hay plantillas disponibles para este plan",
                     "data": [],
                     "success": True
-                }
-            return {
+                })
+            return JSONResponse(status_code=200, content={
                 "message": "Filtro aplicado exitosamente",
                 "data": lista_formateada,
                 "success": True
-            }
+            })
 
         # Estructura de respuesta de la HU-09 (Catálogo paginado general sin filtro)
-        return {
+        return JSONResponse(status_code=200, content={
             "mensaje": "Catálogo obtenido exitosamente",
             "data": {
                 "pagina": page,
@@ -125,10 +171,11 @@ def obtener_catalogo_paginado(
                 "plantillas": lista_formateada
             },
             "success": True
-        }
+        })
         
     except CamposInvalidosException as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail={"mensaje": str(e), "data": None, "success": False}
-        )
+        return JSONResponse(status_code=400, content={
+            "mensaje": str(e),
+            "data": None,
+            "success": False
+        })

@@ -1,50 +1,49 @@
-from domain.usuario import LoginRequest, LoginResponse, LogoutResponse
-from repository.usuario_repository import UsuarioRepository
+from domain.usuario import LoginRequest, LoginResponse, LogoutRequest, LogoutResponse
 
 class UsuarioService:
-
-    def __init__(self, repo: UsuarioRepository):
-        self.repo = repo
+    def __init__(self):
+        # Simulación de usuarios registrados en el sistema
+        self._usuarios_validos = {
+            "admin@correo.com": "123456",
+            "user@correo.com": "password123"
+        }
 
     def login(self, datos: LoginRequest) -> LoginResponse:
-        usuario = self.repo.buscar_por_email(datos.email)
-        if not usuario:
-            return LoginResponse(
-                mensaje="Correo o contraseña incorrectos",
-                data=None,
-                success=False
-            )
-        if not usuario.verificar_password(datos.password):
-            return LoginResponse(
-                mensaje="Correo o contraseña incorrectos",
-                data=None,
-                success=False
-            )
-        return LoginResponse(
-            mensaje="Inicio de sesión exitoso",
-            data={
-                **usuario.to_response(),
-                "token": f"token-simulado-{usuario.id}-abc123"
-            },
-            success=True
-        )
+        try:
+            email = datos.email
+            password = datos.password
 
-    def logout(self, token: str) -> LogoutResponse:
-        if not token:
-            return LogoutResponse(
-                mensaje="El token no puede estar vacío",
+            if email in self._usuarios_validos and self._usuarios_validos[email] == password:
+                return LoginResponse(
+                    message="Inicio de sesión exitoso",
+                    data={"email": email, "token": "simulated-jwt-token-xyz"},
+                    success=True
+                )
+            
+            return LoginResponse(
+                message="Credenciales inválidas",
                 data=None,
                 success=False
             )
-        if not self.repo.token_es_valido(token):
-            return LogoutResponse(
-                mensaje="Sesión no válida o ya expirada",
+        except Exception:
+            return LoginResponse(
+                message="Error interno al iniciar sesión",
                 data=None,
                 success=False
             )
-        self.repo.invalidar_token(token)
-        return LogoutResponse(
-            mensaje="Sesión cerrada exitosamente",
-            data=None,
-            success=True
-        )
+
+    def logout(self, datos: LogoutRequest) -> LogoutResponse:
+        try:
+            return LogoutResponse(
+                message="Cierre de sesión exitoso",
+                data={"email": datos.email},
+                success=True
+            )
+        except Exception:
+            return LogoutResponse(
+                message="Error al cerrar sesión",
+                data=None,
+                success=False
+            )
+
+usuario_service = UsuarioService()

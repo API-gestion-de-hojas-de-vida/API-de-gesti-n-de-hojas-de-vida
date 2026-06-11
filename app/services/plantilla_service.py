@@ -15,15 +15,14 @@ class NoEncontradoException(Exception):
 class CamposInvalidosException(Exception):
     pass
 
+class ConflictoException(Exception):
+    pass
 
 class PlantillaService:
-    # El constructor siempre va al principio
+
     def __init__(self, repo: PlantillaRepository):
         self.repo = repo
 
-    # ==========================================
-    # HU-04: CREAR PLANTILLA
-    # ==========================================
     def crear_plantilla(self, datos: PlantillaCreate, rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
@@ -38,9 +37,6 @@ class PlantillaService:
             categoria=datos.categoria
         )
 
-    # ==========================================
-    # HU-05: CAMPOS OBLIGATORIOS
-    # ==========================================
     def actualizar_campos_obligatorios(self, id: int, campos: List[str], rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
@@ -56,14 +52,12 @@ class PlantillaService:
 
         return self.repo.actualizar_campos(id, campos)
 
-    # ==========================================
-    # HU-06: CATEGORIZAR PLANTILLA
-    # ==========================================
     def actualizar_categoria_plantilla(self, id: int, categoria: str, rol_usuario: str):
         if rol_usuario != "Administrador":
             raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
 
         plantilla = self.repo.obtener_por_id(id)
+        
         if not plantilla:
             raise NoEncontradoException("Plantilla no encontrada")
 
@@ -80,3 +74,28 @@ class PlantillaService:
             raise CamposInvalidosException("Categoría no válida. Debe ser Gratis, Plus o Pro")
 
         return self.repo.obtener_paginadas(page, size, categoria)
+
+    # ==========================================
+    # LÓGICA DE TUS COMPAÑEROS: DESACTIVAR
+    # ==========================================
+    def desactivar_plantilla_obsoleta(self, id: int, rol_usuario: str):
+        if rol_usuario != "Administrador":
+            raise AutorizacionException("Solo el rol Administrador puede consumir este endpoint")
+
+        plantilla = self.repo.obtener_por_id(id)
+        if not plantilla:
+            raise NoEncontradoException("Plantilla no encontrada")
+
+        if not plantilla.activa:
+            raise ConflictoException("La plantilla ya se encuentra inactiva")
+
+        self.repo.desactivar_logico(id)
+
+        return {
+            "mensaje": "Plantilla desactivada correctamente",
+            "data": {
+                "id": id,
+                "estado": "inactivo"
+            },
+            "success": True
+        }

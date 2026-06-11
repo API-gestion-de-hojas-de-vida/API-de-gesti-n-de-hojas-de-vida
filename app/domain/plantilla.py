@@ -1,40 +1,50 @@
 # app/domain/plantilla.py
 from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List
 
-# =====================================================================
-# 1. ENUMS Y VALIDACIONES DE ESTRUCTURA (HU-06)
-# =====================================================================
+
 class CategoriaPlan(str, Enum):
     GRATIS = "Gratis"
     PLUS = "Plus"
     PRO = "Pro"
 
-# =====================================================================
-# 2. ESQUEMAS DE PETICIÓN (PYDANTIC MODELS)
-# =====================================================================
+
 class PlantillaCreate(BaseModel):
     nombre: str = Field(..., description="Nombre de la plantilla")
-    secciones: List[str] = Field(..., description="Lista de secciones generales")
-    categoria: CategoriaPlan = Field(default=CategoriaPlan.GRATIS, description="Categoría inicial de la plantilla")
+    secciones: List[str] = Field(..., description="Lista de secciones que componen la plantilla")
+    categoria: str = Field("Gratis", description="Categoría de la plantilla")
+
+    @field_validator("nombre")
+    @classmethod
+    def limpiar_nombre(cls, v):
+        return v.strip()
+
+    @field_validator("secciones")
+    @classmethod
+    def validar_secciones(cls, v):
+        if not v or len(v) == 0:
+            raise ValueError("Las secciones no pueden estar vacías")
+        if any(not seccion.strip() for seccion in v):
+            raise ValueError("Las secciones no pueden contener elementos vacíos")
+        return [seccion.strip() for seccion in v]
+
 
 class PlantillaUpdateObligatorios(BaseModel):
-    campos_obligatorios: List[str] = Field(..., description="Lista de campos que serán obligatorios")
+    campos_obligatorios: List[str] = Field(..., description="Lista de campos obligatorios")
+
 
 class PlantillaUpdateCategoria(BaseModel):
-    categoria: CategoriaPlan = Field(..., description="Nueva categoría asignada a la plantilla (Gratis, Plus, Pro)")
+    categoria: CategoriaPlan = Field(..., description="Nueva categoría: Gratis, Plus o Pro")
 
-# =====================================================================
-# 3. ENTIDAD DE DOMINIO (OBJETO DE NEGOCIO)
-# =====================================================================
+
 class Plantilla:
     def __init__(self, id: int, nombre: str, secciones: List[str], categoria: str):
         self.id = id
         self.nombre = nombre
         self.secciones = secciones
         self.categoria = categoria
-        self.campos_obligatorios: List[str] = [] 
+        self.campos_obligatorios: List[str] = []
         self.activa: bool = True  # Para la paginación y filtros (HU-09 y HU-10)
 
     def to_dict(self):
