@@ -1,8 +1,11 @@
-﻿# app/repositories/plantilla_repository.py
+# app/repositories/plantilla_repository.py
+
 from app.domain.plantilla import Plantilla
 from typing import Optional, List
 
+
 class PlantillaRepository:
+
     def __init__(self):
         self._datos: List[Plantilla] = []
         self._siguiente_id: int = 1
@@ -19,13 +22,7 @@ class PlantillaRepository:
         return None
 
     def crear(self, nombre: str, secciones: List[str], categoria: str) -> Plantilla:
-        nueva = Plantilla(
-            id=self._siguiente_id,
-            nombre=nombre,
-            secciones=secciones,
-            categoria=categoria
-        )
-        setattr(nueva, "activo", True)
+        nueva = Plantilla(id=self._siguiente_id, nombre=nombre, secciones=secciones, categoria=categoria)
         self._datos.append(nueva)
         self._siguiente_id += 1
         return nueva
@@ -42,10 +39,10 @@ class PlantillaRepository:
             plantilla.campos_obligatorios = campos
         return plantilla
 
-    def actualizar_categoria(self, id: int, categoria: str) -> Plantilla:
+    def actualizar_categoria(self, id: int, nueva_categoria: str) -> Plantilla:
         plantilla = self.obtener_por_id(id)
         if plantilla:
-            plantilla.categoria = categoria
+            plantilla.categoria = nueva_categoria
         return plantilla
 
     def desactivar_logico(self, id: int) -> Optional[Plantilla]:
@@ -54,30 +51,24 @@ class PlantillaRepository:
             plantilla.activa = False
         return plantilla
 
-    def actualizar_categoria(self, id: int, nueva_categoria: str) -> Plantilla:
-        plantilla = self.obtener_por_id(id)
-        if plantilla:
-            plantilla.categoria = nueva_categoria
-        return plantilla
-
-    def obtener_paginadas(self, page: int, size: int, categoria: str = None):
+    def obtener_paginadas(self, page: int, size: int, categoria: str = None, buscar: str = None):
         activas = [p for p in self._datos if p.activa]
         if categoria:
             activas = [p for p in activas if p.categoria == categoria]
+        if buscar:
+            termino = buscar.strip().lower()
+            activas = [p for p in activas if termino in p.nombre.lower()]
         total_activas = len(activas)
         inicio = (page - 1) * size
         fin = inicio + size
         return total_activas, activas[inicio:fin]
 
-    # ==========================================
-    # HU-11: OBTENER ACTIVAS
-    # ==========================================
     def obtener_activas(self):
         return [p for p in self._datos if p.activa]
-    # ==========================================
-    # HU-13: BUSQUEDA POR PALABRA CLAVE
-    # ==========================================
+
     def buscar(self, termino: str) -> List[Plantilla]:
         termino_limpio = termino.strip().lower()
         return [p for p in self._datos if p.activa and termino_limpio in p.nombre.lower()]
+
+
 plantilla_repository = PlantillaRepository()
