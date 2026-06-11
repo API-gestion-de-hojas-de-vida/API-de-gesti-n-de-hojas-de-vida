@@ -206,3 +206,22 @@ def obtener_catalogo_con_indicador(
             'data': None,
             'success': False
         })
+
+# ==========================================
+# HU-12: VISTA PREVIA DE PLANTILLA
+# ==========================================
+@router.get('/{id}/preview', status_code=200)
+def obtener_preview(id: int):
+    try:
+        data = service.obtener_preview(id)
+        return JSONResponse(status_code=200, content={
+            'message': 'Plantilla obtenida exitosamente',
+            'data': data,
+            'success': True
+        })
+    except NoEncontradoException as e:
+        return JSONResponse(status_code=404, content={
+            'message': str(e),
+            'data': None,
+            'success': False
+        })

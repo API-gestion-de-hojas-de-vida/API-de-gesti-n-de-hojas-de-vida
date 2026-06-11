@@ -115,3 +115,23 @@ class PlantillaService:
                 'esDePago': p.categoria in ['Plus', 'Pro']
             })
         return resultado
+    # ==========================================
+    # HU-12: VISTA PREVIA DE PLANTILLA
+    # ==========================================
+    def obtener_preview(self, id: int):
+        plantilla = self.repo.obtener_por_id(id)
+        if not plantilla:
+            raise NoEncontradoException('Plantilla no encontrada')
+        if not plantilla.activa:
+            raise NoEncontradoException('Plantilla no disponible')
+        return {
+            'id': plantilla.id,
+            'nombre': plantilla.nombre,
+            'categoria': plantilla.categoria,
+            'secciones': plantilla.secciones,
+            'datosEjemplo': {
+                'nombre': 'Juan Perez',
+                'cargo': 'Desarrollador Backend',
+                'experiencia': '3 anos'
+            }
+        }
