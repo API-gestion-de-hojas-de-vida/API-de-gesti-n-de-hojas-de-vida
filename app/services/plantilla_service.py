@@ -135,3 +135,10 @@ class PlantillaService:
                 'experiencia': '3 anos'
             }
         }
+    # ==========================================
+    # HU-13: BUSQUEDA POR PALABRA CLAVE
+    # ==========================================
+    def buscar_plantillas(self, termino: str):
+        if not termino or not termino.strip():
+            raise CamposInvalidosException('El termino de busqueda no puede estar vacio')
+        return self.repo.buscar(termino)

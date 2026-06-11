@@ -138,9 +138,31 @@ def desactivar_plantilla(
 def obtener_catalogo_paginado(
     page: int = Query(1, description="Numero de pagina"),
     size: int = Query(10, description="Cantidad de registros por pagina"),
-    categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)")
+    categoria: str = Query(None, description="Filtrar por plan (Gratis, Plus, Pro)"),
+    buscar: str = Query(None, description="Buscar por palabra clave")
 ):
     try:
+        if buscar is not None:
+            try:
+                resultados = service.buscar_plantillas(buscar)
+            except CamposInvalidosException as e:
+                return JSONResponse(status_code=400, content={
+                    'message': str(e),
+                    'data': None,
+                    'success': False
+                })
+            if not resultados:
+                return JSONResponse(status_code=200, content={
+                    'message': 'No se encontraron plantillas con ese termino',
+                    'data': [],
+                    'success': True
+                })
+            lista = [{'id': p.id, 'nombre': p.nombre, 'categoria': p.categoria} for p in resultados]
+            return JSONResponse(status_code=200, content={
+                'message': 'Busqueda realizada exitosamente',
+                'data': lista,
+                'success': True
+            })
         total, plantillas_paginadas = service.obtener_catalogo(page, size, categoria)
         lista_formateada = [{"id": p.id, "nombre": p.nombre, "categoria": p.categoria} for p in plantillas_paginadas]
         

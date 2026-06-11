@@ -74,4 +74,10 @@ class PlantillaRepository:
     # ==========================================
     def obtener_activas(self):
         return [p for p in self._datos if p.activa]
+    # ==========================================
+    # HU-13: BUSQUEDA POR PALABRA CLAVE
+    # ==========================================
+    def buscar(self, termino: str) -> List[Plantilla]:
+        termino_limpio = termino.strip().lower()
+        return [p for p in self._datos if p.activa and termino_limpio in p.nombre.lower()]
 plantilla_repository = PlantillaRepository()
