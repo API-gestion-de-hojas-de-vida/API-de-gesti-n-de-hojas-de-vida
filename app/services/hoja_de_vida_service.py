@@ -148,3 +148,24 @@ class HojaDeVidaService:
             "educacion": hv.datos.get("educacion", []),
             "habilidades": hv.datos.get("habilidades")
         }
+    # HU-23: eliminar hoja de vida
+    def eliminar_hoja_de_vida(self, id: int, usuario_id: int) -> dict:
+        hv = self.repo_hv.obtener_por_id(id)
+
+        if not hv:
+            raise NoEncontradoException("Hoja de vida no encontrada")
+
+        if hv.usuario_id != usuario_id:
+            raise AccesoNoAutorizadoException("No tienes permiso para eliminar esta hoja de vida")
+
+        # Registrar auditoría antes de eliminar
+        self.repo_hv.registrar_auditoria(usuario_id, id, accion="ELIMINAR_HV")
+
+        # Eliminar en cascada
+        self.repo_hv.eliminar(id)
+
+        return {
+            "message": "Hoja de vida eliminada exitosamente",
+            "data": None,
+            "success": True
+        }

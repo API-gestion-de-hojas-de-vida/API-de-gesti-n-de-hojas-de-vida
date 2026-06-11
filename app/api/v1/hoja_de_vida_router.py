@@ -93,4 +93,16 @@ def abrir_modo_edicion(
         return JSONResponse(status_code=403, content={"mensaje": str(e), "data": None, "success": False})
     except NoEncontradoException as e:
         return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
-    # Endpoint temporal para crear hojas de vida de prueba — testing HU-22
+# HU-23: Eliminar hoja de vida
+@router.delete("/{id}", status_code=200)
+def eliminar_hoja_de_vida(
+    id: int,
+    x_user_id: int = Header(..., description="ID del usuario autenticado")
+):
+    try:
+        resultado = service.eliminar_hoja_de_vida(id=id, usuario_id=x_user_id)
+        return JSONResponse(status_code=200, content=resultado)
+    except AccesoNoAutorizadoException as e:
+        return JSONResponse(status_code=403, content={"mensaje": str(e), "data": None, "success": False})
+    except NoEncontradoException as e:
+        return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
