@@ -39,3 +39,24 @@ class HojaDeVidaService:
             return BloqueResponse(message='Los campos institucion y titulo son obligatorios', data=None, success=False)
         bloque = self.repo.agregar_bloque(hoja_id, 'educacion', datos.model_dump())
         return BloqueResponse(message='Bloque agregado exitosamente', data=bloque, success=True)
+
+    def finalizar(self, hoja_id: int):
+        from app.domain.hoja_de_vida import FinalizarResponse
+        if not self.repo.hoja_existe(hoja_id):
+            return FinalizarResponse(message='Hoja de vida no encontrada', data=None, success=False)
+        campos_faltantes = []
+        secciones = self.repo.get_secciones(hoja_id)
+        if not secciones.get('nombre'):
+            campos_faltantes.append('Nombre')
+        if not secciones.get('email'):
+            campos_faltantes.append('Email')
+        if not secciones.get('perfil'):
+            campos_faltantes.append('Perfil profesional')
+        if not self.repo.get_bloques(hoja_id, 'experiencia'):
+            campos_faltantes.append('Experiencia laboral')
+        if not self.repo.get_bloques(hoja_id, 'educacion'):
+            campos_faltantes.append('Educacion')
+        if campos_faltantes:
+            return FinalizarResponse(message='Existen campos obligatorios sin completar', data={'camposFaltantes': campos_faltantes}, success=False)
+        self.repo.finalizar(hoja_id)
+        return FinalizarResponse(message='Hoja de vida finalizada exitosamente', data={'id': hoja_id, 'estado': 'finalizada'}, success=True)

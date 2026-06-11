@@ -36,3 +36,8 @@ class BloqueResponse(BaseModel):
     message: str
     data: Optional[dict]
     success: bool
+
+class FinalizarResponse(BaseModel):
+    message: str
+    data: Optional[dict]
+    success: bool

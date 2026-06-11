@@ -1,4 +1,4 @@
-# app/repositories/hoja_repository.py
+﻿# app/repositories/hoja_repository.py
 from typing import Dict
 
 class HojaRepository:
@@ -22,4 +22,14 @@ class HojaRepository:
         self._bloques[hoja_id].append(bloque)
         return bloque
 
+
+    def get_secciones(self, hoja_id: int) -> dict:
+        return self._secciones.get(hoja_id, {})
+
+    def get_bloques(self, hoja_id: int, tipo: str) -> list:
+        return [b for b in self._bloques.get(hoja_id, []) if b['tipo'] == tipo]
+
+    def finalizar(self, hoja_id: int) -> None:
+        self._hojas_finalizadas = getattr(self, '_hojas_finalizadas', set())
+        self._hojas_finalizadas.add(hoja_id)
 hoja_repository = HojaRepository()

@@ -48,3 +48,12 @@ def agregar_educacion(id: int, datos: EducacionRequest):
     if not resultado.success:
         return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={'message': resultado.message, 'data': None, 'success': False})
     return JSONResponse(status_code=status.HTTP_201_CREATED, content={'message': resultado.message, 'data': resultado.data, 'success': True})
+
+@router.post('/{id}/finalizar', summary='Finalizar hoja de vida')
+def finalizar(id: int):
+    resultado = service.finalizar(hoja_id=id)
+    if not resultado.success and 'no encontrada' in resultado.message:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={'message': resultado.message, 'data': None, 'success': False})
+    if not resultado.success:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={'message': resultado.message, 'data': resultado.data, 'success': False})
+    return JSONResponse(status_code=status.HTTP_200_OK, content={'message': resultado.message, 'data': resultado.data, 'success': True})
