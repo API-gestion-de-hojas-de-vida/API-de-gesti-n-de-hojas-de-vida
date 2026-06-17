@@ -1,20 +1,6 @@
-# Entorno virtual
-venv/
-ENV/
-env/
-
-# Archivos de configuración de Python
+﻿venv/
 __pycache__/
-*.py[cod]
-*$py.class
-
-# Configuraciones de VS Code y Visual Studio
-.vscode/
-.vs/
-*.sln
-*.user
-*.suo
-
-# Base de datos local (si es SQLite)
-*.sqlite
-venv/
+**/__pycache__/
+*.pyc
+*.pyo
+.env

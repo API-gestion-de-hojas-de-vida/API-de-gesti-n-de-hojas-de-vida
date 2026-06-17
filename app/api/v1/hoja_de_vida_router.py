@@ -3,8 +3,9 @@ from fastapi import APIRouter, Header, Response, status
 from fastapi.responses import JSONResponse
 from app.domain.hoja_de_vida import SeccionesUpdate
 from app.services.hoja_de_vida_service import (
-    HojaDeVidaService, NoEncontradoException, 
-    CamposFaltantesException, LongitudInvalidaException, ExportacionInvalidaException
+    HojaDeVidaService, NoEncontradoException,
+    CamposFaltantesException, LongitudInvalidaException, ExportacionInvalidaException,
+    AccesoNoAutorizadoException
 )
 from app.repositories.hoja_de_vida_repository import hoja_de_vida_repository
 from app.repositories.plantilla_repository import plantilla_repository
@@ -15,6 +16,7 @@ router = APIRouter(
 )
 
 service = HojaDeVidaService(hoja_de_vida_repository, plantilla_repository)
+
 
 @router.post("/{id}/secciones", status_code=200)
 def guardar_secciones(id: int, datos: SeccionesUpdate):
@@ -29,6 +31,7 @@ def guardar_secciones(id: int, datos: SeccionesUpdate):
         return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
     except LongitudInvalidaException as e:
         return JSONResponse(status_code=400, content={"mensaje": str(e), "data": None, "success": False})
+
 
 @router.post("/{id}/finalizar", status_code=200)
 def finalizar_hoja_de_vida(id: int):
@@ -49,9 +52,7 @@ def finalizar_hoja_de_vida(id: int):
             "success": False
         })
 
-# ==========================================
-# HU-21: ENDPOINT DE EXPORTACIÓN PDF
-# ==========================================
+
 @router.get("/{id}/exportar/pdf")
 def exportar_hoja_de_vida_pdf(
     id: int,
@@ -61,19 +62,35 @@ def exportar_hoja_de_vida_pdf(
 ):
     try:
         pdf_bytes, nombre_archivo = service.preparar_exportacion_pdf(
-            id=id, 
-            usuario_id=x_user_id, 
-            plan_usuario=x_user_plan, 
+            id=id,
+            usuario_id=x_user_id,
+            plan_usuario=x_user_plan,
             nombre_usuario=x_user_name
         )
-        
-        # Caso 1: Retorno exitoso del archivo binario descargable
         headers = {"Content-Disposition": f"attachment; filename={nombre_archivo}"}
         return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
 
     except NoEncontradoException as e:
         return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
-        
     except ExportacionInvalidaException as e:
-        # Casos 2 y 3: Validaciones de negocio fallidas (sin finalizar o sin plantilla)
         return JSONResponse(status_code=400, content={"mensaje": str(e), "data": None, "success": False})
+
+
+# HU-22: Abrir hoja de vida en modo edición
+@router.get("/{id}/editar", status_code=200)
+def abrir_modo_edicion(
+    id: int,
+    x_user_id: int = Header(..., description="ID del usuario autenticado")
+):
+    try:
+        resultado = service.abrir_modo_edicion(id=id, usuario_id=x_user_id)
+        return JSONResponse(status_code=200, content={
+            "mensaje": "Hoja de vida cargada exitosamente",
+            "data": resultado,
+            "success": True
+        })
+    except AccesoNoAutorizadoException as e:
+        return JSONResponse(status_code=403, content={"mensaje": str(e), "data": None, "success": False})
+    except NoEncontradoException as e:
+        return JSONResponse(status_code=404, content={"mensaje": str(e), "data": None, "success": False})
+    # Endpoint temporal para crear hojas de vida de prueba — testing HU-22
